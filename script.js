@@ -9,6 +9,7 @@ let weightChart = null;
 window.addEventListener('DOMContentLoaded', () => {
   setGreeting();
   loadData();
+  setupWeightInput();
 });
 
 function setGreeting() {
@@ -24,6 +25,22 @@ function setGreeting() {
   }
   
   document.getElementById('greetingText').textContent = text;
+}
+
+function setupWeightInput() {
+  const input = document.getElementById('weightInput');
+  
+  // タップしたら空欄にする
+  input.addEventListener('focus', () => {
+    input.value = '';
+  });
+  
+  // フォーカス外れた時、空欄なら前回値に戻す
+  input.addEventListener('blur', () => {
+    if (input.value === '' && myData && myData.member) {
+      input.value = myData.member.currentWeight || 70.0;
+    }
+  });
 }
 
 function loadData() {
@@ -45,6 +62,9 @@ function loadData() {
       
       document.getElementById('loading').style.display = 'none';
       document.getElementById('app').style.display = 'block';
+      
+      // URLハッシュでセクションジャンプ
+      handleHashScroll();
     })
     .catch(err => {
       showError('読み込みに失敗しました');
@@ -52,17 +72,53 @@ function loadData() {
     });
 }
 
+function handleHashScroll() {
+  const hash = window.location.hash;
+  if (!hash) return;
+  
+  setTimeout(() => {
+    let targetEl = null;
+    
+    if (hash === '#weight') {
+      targetEl = document.querySelector('.weight-card');
+    } else if (hash === '#food') {
+      targetEl = document.querySelector('.food-card');
+    } else if (hash === '#water') {
+      targetEl = document.querySelector('.water-card');
+    } else if (hash === '#cheat') {
+      targetEl = document.querySelector('.cheat-card');
+    } else if (hash === '#recommend') {
+      targetEl = document.querySelector('.recommend-card');
+    }
+    
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // ハイライトアニメ
+      targetEl.style.transition = 'transform 0.3s ease';
+      targetEl.style.transform = 'scale(1.02)';
+      setTimeout(() => {
+        targetEl.style.transform = 'scale(1)';
+      }, 300);
+    }
+  }, 300);
+}
+
 function renderPage(data) {
   const m = data.member;
   const t = data.today;
   
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
-  document.getElementById('weightInput').value = m.currentWeight || 70.0;
+  
+  // 体重入力欄: placeholder で前回値を薄く表示
+  const weightInput = document.getElementById('weightInput');
+  weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
+  weightInput.value = m.currentWeight || 70.0;
+  
   document.getElementById('targetWeight').textContent = m.targetWeight || '--';
   
   if (data.weightHistory && data.weightHistory.length > 0) {
     const lastWeight = data.weightHistory[data.weightHistory.length - 1].weight;
-    document.getElementById('weightInfo').textContent = `昨日の体重: ${lastWeight}kg`;
+    document.getElementById('weightInfo').textContent = `前回の体重: ${lastWeight}kg`;
     
     const diffEl = document.getElementById('weightDiff');
     const goalDiff = (m.currentWeight - m.targetWeight).toFixed(1);
@@ -146,8 +202,6 @@ function renderWeekCalendar(cheatDayName) {
   
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((todayDow + 6) % 7));
-  
-  const order = [1, 2, 3, 4, 5, 6, 0];
   
   let html = '';
   let daysUntilCheat = -1;
@@ -269,10 +323,12 @@ function drawWeightChart(history) {
 }
 
 function saveWeightHandler() {
-  const weight = parseFloat(document.getElementById('weightInput').value);
+  const input = document.getElementById('weightInput');
+  const weight = parseFloat(input.value);
   
   if (!weight || weight < 20 || weight > 200) {
     showToast('正しい体重を入力してください', 'error');
+    input.focus();
     return;
   }
   
@@ -304,8 +360,13 @@ function postToGas(data) {
     .catch(err => ({ error: err.toString() }));
 }
 
-function showProfile() { alert('プロフィール変更機能は次のバージョンで実装予定です'); }
-function showGoal() { alert('目標体重変更機能は次のバージョンで実装予定です'); }
+function showProfile() {
+  window.location.href = `profile.html?uid=${lineUserId}`;
+}
+
+function showGoal() {
+  window.location.href = `profile.html?uid=${lineUserId}#goal`;
+}
 
 function confirmPause() {
   if (confirm('サービスを休止しますか?\n\nデータは残したまま、AI返信だけ止まります。\n再開はLINEで「再開」と送るだけでOKです。')) {
