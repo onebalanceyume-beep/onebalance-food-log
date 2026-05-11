@@ -25,24 +25,17 @@
     </header>
     
     <div class="greeting">
-      <p><span id="greetingIcon">🌅</span> <span id="greetingText">おはようございます</span>、<span id="nickname">--</span>さん</p>
+      <p><span id="greetingText">おはようございます</span>、<span id="nickname">--</span>さん</p>
     </div>
     
     <section class="card weight-card">
       <h2 class="card-title">今日の体重</h2>
       
-      <div class="weight-input-area">
-        <button class="btn-adjust" onclick="adjustWeight(-1)">−1</button>
-        <button class="btn-adjust" onclick="adjustWeight(-0.1)">−0.1</button>
-        
-        <div class="weight-display">
-          <input type="number" id="weightInput" step="0.1" value="70.0" />
-          <span class="weight-unit">kg</span>
-        </div>
-        
-        <button class="btn-adjust" onclick="adjustWeight(0.1)">+0.1</button>
-        <button class="btn-adjust" onclick="adjustWeight(1)">+1</button>
+      <div class="weight-display-wrapper">
+        <input type="number" id="weightInput" step="0.1" inputmode="decimal" value="70.0" />
+        <span class="weight-unit">kg</span>
       </div>
+      <p class="weight-hint">タップして入力</p>
       
       <button class="btn-primary" onclick="saveWeightHandler()">
         記録する
@@ -110,6 +103,12 @@
       </div>
     </section>
     
+    <section class="card recommend-card">
+      <h2 class="card-title">あなたへのおすすめ食材</h2>
+      <div id="recommendMessage" class="recommend-message">--</div>
+      <div id="recommendList" class="recommend-list"></div>
+    </section>
+    
     <section class="card water-card">
       <h2 class="card-title">水分</h2>
       
@@ -128,15 +127,19 @@
       </div>
     </section>
     
+    <section class="card cheat-card">
+      <h2 class="card-title">今週のチートデイ</h2>
+      <div id="weekCalendar" class="week-calendar"></div>
+      <div class="cheat-countdown" id="cheatCountdown">--</div>
+    </section>
+    
     <section class="card streak-card">
       <h2 class="card-title">連続記録</h2>
       <div class="streak-display">
         <span class="streak-number" id="streakDays">--</span>
         <span class="streak-unit">日</span>
       </div>
-      <div class="cheat-day-info">
-        今週のチートデイ <span id="cheatDay">--</span>曜日
-      </div>
+      <div class="streak-comment">この調子で続けましょう♡</div>
     </section>
     
     <section class="account-section">
