@@ -1,11 +1,5 @@
-// ============================================
-// ONE BALANCE マイページ
-// ============================================
-
-// GAS APIのURL(ヨシさんのデプロイURL)
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
 
-// URLパラメータからLINE User ID取得
 const urlParams = new URLSearchParams(window.location.search);
 const lineUserId = urlParams.get('uid') || '';
 
@@ -19,21 +13,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
 function setGreeting() {
   const hour = new Date().getHours();
-  let icon = '🌅';
   let text = 'おはようございます';
   
   if (hour >= 11 && hour < 15) {
-    icon = '☀️';
     text = 'こんにちは';
   } else if (hour >= 15 && hour < 18) {
-    icon = '🌇';
     text = 'お疲れ様です';
   } else if (hour >= 18 || hour < 5) {
-    icon = '🌙';
     text = 'こんばんは';
   }
   
-  document.getElementById('greetingIcon').textContent = icon;
   document.getElementById('greetingText').textContent = text;
 }
 
@@ -84,9 +73,10 @@ function renderPage(data) {
   renderFoodList(t.foods);
   renderPFC(t, m);
   renderWater(t.water, m.targetWater);
+  renderRecommend(data.recommendedFoods);
+  renderWeekCalendar(m.cheatDay);
   
   document.getElementById('streakDays').textContent = data.streakDays || 0;
-  document.getElementById('cheatDay').textContent = m.cheatDay || '--';
 }
 
 function renderFoodList(foods) {
@@ -109,6 +99,97 @@ function renderFoodList(foods) {
       </div>
     </div>
   `).join('');
+}
+
+function renderRecommend(recommend) {
+  const messageEl = document.getElementById('recommendMessage');
+  const listEl = document.getElementById('recommendList');
+  
+  if (!recommend) {
+    messageEl.textContent = 'データを読み込み中...';
+    listEl.innerHTML = '';
+    return;
+  }
+  
+  messageEl.textContent = recommend.message;
+  
+  if (!recommend.foods || recommend.foods.length === 0) {
+    listEl.innerHTML = '<div class="recommend-empty">バランスばっちりです♡</div>';
+    return;
+  }
+  
+  listEl.innerHTML = recommend.foods.map((f, i) => `
+    <div class="recommend-item">
+      <div class="recommend-rank">${i + 1}位</div>
+      <div class="recommend-name">${f.name}</div>
+      <div class="recommend-serving">${f.serving} (${f.servingG}g)</div>
+      <div class="recommend-pfc">
+        <span>P ${f.p}g</span>
+        <span>F ${f.f}g</span>
+        <span>C ${f.c}g</span>
+        <span>${f.calorie}kcal</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderWeekCalendar(cheatDayName) {
+  const container = document.getElementById('weekCalendar');
+  const countdownEl = document.getElementById('cheatCountdown');
+  
+  const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
+  const dayMap = { '日': 0, '月': 1, '火': 2, '水': 3, '木': 4, '金': 5, '土': 6 };
+  const cheatDayNum = dayMap[cheatDayName];
+  
+  const today = new Date();
+  const todayDow = today.getDay();
+  
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((todayDow + 6) % 7));
+  
+  const order = [1, 2, 3, 4, 5, 6, 0];
+  
+  let html = '';
+  let daysUntilCheat = -1;
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    
+    const dow = date.getDay();
+    const dateNum = date.getDate();
+    const isToday = date.toDateString() === today.toDateString();
+    const isCheat = dow === cheatDayNum;
+    
+    if (isCheat) {
+      const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
+      if (diff >= 0) daysUntilCheat = diff;
+    }
+    
+    let cls = 'week-day';
+    if (isToday && !isCheat) cls += ' today';
+    if (isCheat) cls += ' cheat';
+    
+    html += `
+      <div class="${cls}">
+        <div class="day-label">${dayLabels[dow]}</div>
+        <div class="day-num">${dateNum}</div>
+        ${isCheat ? '<div class="day-icon">🎂</div>' : ''}
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+  
+  if (cheatDayNum === undefined) {
+    countdownEl.innerHTML = 'チートデイ未設定';
+  } else if (daysUntilCheat === 0) {
+    countdownEl.innerHTML = '今日はチートデイ <strong>🎂</strong> 楽しんで♡';
+  } else if (daysUntilCheat > 0) {
+    countdownEl.innerHTML = `チートデイまで <strong>あと${daysUntilCheat}日</strong>`;
+  } else {
+    countdownEl.innerHTML = 'チートデイは今週終了。来週もう少し!';
+  }
 }
 
 function renderPFC(today, member) {
@@ -145,8 +226,8 @@ function drawWeightChart(history) {
   }
   
   if (!history || history.length === 0) {
-    ctx.font = '12px sans-serif';
-    ctx.fillStyle = '#8B8580';
+    ctx.font = '11px sans-serif';
+    ctx.fillStyle = '#B89AAA';
     ctx.textAlign = 'center';
     ctx.fillText('体重を記録するとグラフが表示されます', ctx.canvas.width / 2, ctx.canvas.height / 2);
     return;
@@ -159,12 +240,12 @@ function drawWeightChart(history) {
       datasets: [{
         label: '体重',
         data: history.map(h => h.weight),
-        borderColor: '#C9656B',
-        backgroundColor: 'rgba(201, 101, 107, 0.08)',
+        borderColor: '#7AA8D8',
+        backgroundColor: 'rgba(165, 200, 235, 0.2)',
         borderWidth: 2,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#C9656B',
+        pointBackgroundColor: '#7AA8D8',
         pointRadius: 3
       }]
     },
@@ -175,25 +256,16 @@ function drawWeightChart(history) {
       scales: {
         y: {
           beginAtZero: false,
-          grid: { color: '#F0EBE5' },
-          ticks: { font: { size: 10 }, color: '#8B8580' }
+          grid: { color: 'rgba(165, 200, 235, 0.15)' },
+          ticks: { font: { size: 10 }, color: '#8FA8BD' }
         },
         x: {
           grid: { display: false },
-          ticks: { font: { size: 10 }, color: '#8B8580', maxTicksLimit: 7 }
+          ticks: { font: { size: 10 }, color: '#8FA8BD', maxTicksLimit: 7 }
         }
       }
     }
   });
-}
-
-function adjustWeight(delta) {
-  const input = document.getElementById('weightInput');
-  let val = parseFloat(input.value) || 0;
-  val = Math.round((val + delta) * 10) / 10;
-  if (val < 20) val = 20;
-  if (val > 200) val = 200;
-  input.value = val.toFixed(1);
 }
 
 function saveWeightHandler() {
@@ -204,26 +276,21 @@ function saveWeightHandler() {
     return;
   }
   
+  showToast('記録中...', 'info');
+  
   postToGas({ action: 'saveWeight', uid: lineUserId, weight: weight })
-    .then(result => {
-      if (result.success) {
-        showToast('体重を記録しました', 'success');
-        setTimeout(() => loadData(), 1000);
-      } else {
-        showToast(result.error || 'エラーが発生しました', 'error');
-      }
+    .then(() => {
+      showToast('体重を記録しました ✨', 'success');
+      setTimeout(() => loadData(), 1000);
     });
 }
 
 function addWater(ml) {
+  showToast(`水分 ${ml}ml 追加 💧`, 'success');
+  
   postToGas({ action: 'saveWater', uid: lineUserId, ml: ml })
-    .then(result => {
-      if (result.success) {
-        showToast(`水分 ${ml}ml 追加しました`, 'success');
-        setTimeout(() => loadData(), 500);
-      } else {
-        showToast(result.error || 'エラーが発生しました', 'error');
-      }
+    .then(() => {
+      setTimeout(() => loadData(), 800);
     });
 }
 
@@ -237,13 +304,8 @@ function postToGas(data) {
     .catch(err => ({ error: err.toString() }));
 }
 
-function showProfile() {
-  alert('プロフィール変更機能は次のバージョンで実装予定です');
-}
-
-function showGoal() {
-  alert('目標体重変更機能は次のバージョンで実装予定です');
-}
+function showProfile() { alert('プロフィール変更機能は次のバージョンで実装予定です'); }
+function showGoal() { alert('目標体重変更機能は次のバージョンで実装予定です'); }
 
 function confirmPause() {
   if (confirm('サービスを休止しますか?\n\nデータは残したまま、AI返信だけ止まります。\n再開はLINEで「再開」と送るだけでOKです。')) {
@@ -260,25 +322,14 @@ function confirmWithdraw() {
   
   const reason = prompt('退会理由を選んでください(任意)\n\n1. 効果が感じられなかった\n2. 価格が合わなかった\n3. 時間がなくなった\n4. 他のサービスに移った\n5. その他\n\n番号を入力してください:');
   
-  const reasonMap = {
-    '1': '効果が感じられなかった',
-    '2': '価格が合わなかった',
-    '3': '時間がなくなった',
-    '4': '他のサービスに移った',
-    '5': 'その他'
-  };
-  
+  const reasonMap = {'1':'効果が感じられなかった','2':'価格が合わなかった','3':'時間がなくなった','4':'他のサービスに移った','5':'その他'};
   const reasonText = reasonMap[reason] || 'その他';
   const satisfaction = prompt('満足度を1〜5で教えてください(任意・スキップOK)') || '';
   const comment = prompt('最後に、ご意見・ご感想があれば(任意・スキップOK)') || '';
   
   postToGas({ action: 'withdraw', uid: lineUserId, reason: reasonText, satisfaction: satisfaction, comment: comment })
-    .then(result => {
-      if (result.success) {
-        showToast('退会処理が完了しました', 'success');
-      } else {
-        showToast(result.error || 'エラーが発生しました', 'error');
-      }
+    .then(() => {
+      showToast('退会処理が完了しました', 'success');
     });
 }
 
