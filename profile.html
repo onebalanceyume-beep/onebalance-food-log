@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <title>ONE BALANCE プロフィール</title>
+  <link rel="stylesheet" href="profile.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  
+  <div id="loading" class="loading">
+    <div class="loading-spinner"></div>
+    <p>読み込み中...</p>
+  </div>
+  
+  <div id="app" class="app" style="display:none;">
+    
+    <header class="header">
+      <button class="back-btn" onclick="goBack()">← 戻る</button>
+      <h1 class="page-title">プロフィール設定</h1>
+    </header>
+    
+    <form id="profileForm" onsubmit="return false;">
+      
+      <section class="card">
+        <h2 class="section-title">基本情報</h2>
+        
+        <div class="field">
+          <label>呼び方</label>
+          <input type="text" id="nickname" placeholder="例: ヨシ" />
+        </div>
+        
+        <div class="field-row">
+          <div class="field">
+            <label>年齢</label>
+            <input type="number" id="age" min="10" max="100" />
+          </div>
+          
+          <div class="field">
+            <label>性別</label>
+            <select id="gender">
+              <option value="">選択</option>
+              <option value="男性">男性</option>
+              <option value="女性">女性</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label>身長 (cm)</label>
+          <input type="number" id="height" step="0.1" min="100" max="220" />
+        </div>
+      </section>
+      
+      <section class="card" id="goal">
+        <h2 class="section-title">体重と目標</h2>
+        
+        <div class="field">
+          <label>現在の体重 (kg)</label>
+          <input type="number" id="currentWeight" step="0.1" min="20" max="200" />
+          <p class="hint">初期登録ミスもここで修正できます</p>
+        </div>
+        
+        <div class="field">
+          <label>目標体重 (kg)</label>
+          <input type="number" id="targetWeight" step="0.1" min="20" max="200" />
+        </div>
+        
+        <div class="field">
+          <label>目標達成希望日</label>
+          <input type="date" id="targetDate" />
+        </div>
+      </section>
+      
+      <section class="card">
+        <h2 class="section-title">ライフスタイル</h2>
+        
+        <div class="field">
+          <label>活動量</label>
+          <select id="activity">
+            <option value="">選択</option>
+            <option value="座り仕事中心">座り仕事中心(オフィスワークなど)</option>
+            <option value="立ち仕事中心">立ち仕事中心(接客・サービス業など)</option>
+            <option value="軽い運動あり">軽い運動あり(週1〜2回)</option>
+            <option value="激しい運動あり">激しい運動あり(週3回以上)</option>
+            <option value="アスリート級">アスリート級(毎日トレーニング)</option>
+          </select>
+        </div>
+        
+        <div class="field">
+          <label>チートデイ曜日</label>
+          <select id="cheatDay">
+            <option value="">選択</option>
+            <option value="月">月曜日</option>
+            <option value="火">火曜日</option>
+            <option value="水">水曜日</option>
+            <option value="木">木曜日</option>
+            <option value="金">金曜日</option>
+            <option value="土">土曜日</option>
+            <option value="日">日曜日</option>
+            <option value="なし">設定しない</option>
+          </select>
+          <p class="hint">週1回好きなものを食べていい日です</p>
+        </div>
+        
+        <div class="field">
+          <label>アレルギー・苦手な食材</label>
+          <textarea id="allergy" rows="3" placeholder="例: 卵、乳製品、ナッツ類"></textarea>
+        </div>
+      </section>
+      
+      <button type="button" class="btn-primary" onclick="saveProfile()">変更を保存</button>
+      <button type="button" class="btn-secondary" onclick="goBack()">キャンセル</button>
+      
+    </form>
+    
+  </div>
+  
+  <div id="toast" class="toast"></div>
+  
+  <script src="profile.js"></script>
+</body>
+</html>

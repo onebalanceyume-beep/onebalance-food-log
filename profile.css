@@ -1,0 +1,238 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body {
+  font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #FFF8FB;
+  color: #6B5560;
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ========= ローディング ========= */
+.loading {
+  position: fixed;
+  inset: 0;
+  background: #FFF8FB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #FFE0EC;
+  border-top-color: #E89AAA;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading p {
+  color: #B89AAA;
+  font-size: 14px;
+}
+
+/* ========= ヘッダー ========= */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 24px;
+  position: relative;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid #FFE0EC;
+  color: #E89AAA;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.back-btn:active {
+  background: #FFEEF4;
+}
+
+.page-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #6B5560;
+}
+
+/* ========= カード ========= */
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(232, 154, 170, 0.05);
+}
+
+.section-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #E89AAA;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #FFE0EC;
+}
+
+/* ========= フィールド ========= */
+.field {
+  margin-bottom: 14px;
+}
+
+.field:last-child {
+  margin-bottom: 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: #8B6F7A;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #FFF8FB;
+  border: 1.5px solid #FFE0EC;
+  border-radius: 12px;
+  color: #6B5560;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #E89AAA;
+  background: white;
+}
+
+.field select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E89AAA' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.hint {
+  font-size: 10px;
+  color: #B89AAA;
+  margin-top: 4px;
+}
+
+/* ========= ボタン ========= */
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #FFA8C0 0%, #E89AAA 100%);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  margin-top: 8px;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 12px rgba(232, 154, 170, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 13px;
+  background: white;
+  color: #B89AAA;
+  border: 1.5px solid #FFE0EC;
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:active {
+  background: #FFF8FB;
+}
+
+/* ========= トースト ========= */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(120px);
+  background: #6B5560;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 1002;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success { background: #A8C898; }
+.toast.error { background: #E89AAA; }
+.toast.info { background: #7AB8B8; }
