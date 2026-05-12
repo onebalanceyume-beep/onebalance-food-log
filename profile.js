@@ -1,11 +1,38 @@
+// ===== LIFF初期化 =====
+const LIFF_ID = "2010053759-1XwyFtST";
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
 
-const urlParams = new URLSearchParams(window.location.search);
-const lineUserId = urlParams.get('uid') || '';
+let lineUserId = '';
 
-window.addEventListener('DOMContentLoaded', () => {
-  loadProfile();
-});
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+    
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId;
+    console.log("ユーザーID取得:", lineUserId);
+    
+    loadProfile();
+  } catch (err) {
+    console.error("LIFF初期化エラー:", err);
+    // LIFF外で開いた場合のフォールバック
+    const urlParams = new URLSearchParams(window.location.search);
+    lineUserId = urlParams.get('uid') || '';
+    
+    if (lineUserId) {
+      loadProfile();
+    } else {
+      showToast('LINEから開いてください', 'error');
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', initLiff);
 
 function loadProfile() {
   if (!lineUserId) {
@@ -92,7 +119,8 @@ function saveProfile() {
 }
 
 function goBack() {
-  window.location.href = `index.html?uid=${lineUserId}`;
+  // マイページのLIFF URLに戻る
+  window.location.href = 'https://liff.line.me/2010053759-TK9uAwtz';
 }
 
 function showToast(message, type = '') {
