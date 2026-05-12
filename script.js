@@ -1,16 +1,45 @@
+// ===== LIFF初期化 =====
+const LIFF_ID = "2010053759-TK9uAwtz";
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
 
-const urlParams = new URLSearchParams(window.location.search);
-const lineUserId = urlParams.get('uid') || '';
-
+let lineUserId = '';
 let myData = null;
 let weightChart = null;
 
-window.addEventListener('DOMContentLoaded', () => {
-  setGreeting();
-  loadData();
-  setupWeightInput();
-});
+async function initLiff() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+    
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId;
+    console.log("ユーザーID取得:", lineUserId);
+    
+    // LIFF取得完了後に画面初期化
+    setGreeting();
+    loadData();
+    setupWeightInput();
+  } catch (err) {
+    console.error("LIFF初期化エラー:", err);
+    // LIFF外で開いた場合のフォールバック(URLパラメータのuid使用)
+    const urlParams = new URLSearchParams(window.location.search);
+    lineUserId = urlParams.get('uid') || '';
+    
+    if (lineUserId) {
+      setGreeting();
+      loadData();
+      setupWeightInput();
+    } else {
+      alert("LINEから開いてください: " + err.message);
+    }
+  }
+}
+
+window.addEventListener('DOMContentLoaded', initLiff);
 
 function setGreeting() {
   const hour = new Date().getHours();
@@ -30,12 +59,10 @@ function setGreeting() {
 function setupWeightInput() {
   const input = document.getElementById('weightInput');
   
-  // タップしたら空欄にする
   input.addEventListener('focus', () => {
     input.value = '';
   });
   
-  // フォーカス外れた時、空欄なら前回値に戻す
   input.addEventListener('blur', () => {
     if (input.value === '' && myData && myData.member) {
       input.value = myData.member.currentWeight || 70.0;
@@ -63,7 +90,6 @@ function loadData() {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('app').style.display = 'block';
       
-      // URLハッシュでセクションジャンプ
       handleHashScroll();
     })
     .catch(err => {
@@ -93,7 +119,6 @@ function handleHashScroll() {
     
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // ハイライトアニメ
       targetEl.style.transition = 'transform 0.3s ease';
       targetEl.style.transform = 'scale(1.02)';
       setTimeout(() => {
@@ -109,7 +134,6 @@ function renderPage(data) {
   
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
   
-  // 体重入力欄: placeholder で前回値を薄く表示
   const weightInput = document.getElementById('weightInput');
   weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
   weightInput.value = m.currentWeight || 70.0;
