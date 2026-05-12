@@ -3,13 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-  <title>ONE BALANCE マイページ</title>
+  <title>ONE TABLE</title>
+  
+  <!-- PWA設定 -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#E89AAA">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ONE TABLE">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" type="image/png" href="icon.png">
+  
+  <!-- キャッシュ制御(更新を確実に反映) -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
   
@@ -29,146 +44,133 @@
       <p><span id="greetingText">おはようございます</span>、<span id="nickname">--</span>さん</p>
     </div>
     
+    <!-- 体重カード -->
     <section class="card weight-card">
       <h2 class="card-title">今日の体重</h2>
-      
-      <div class="weight-display-wrapper">
-        <input type="number" id="weightInput" step="0.1" inputmode="decimal" value="70.0" />
+      <div class="weight-input-row">
+        <input type="number" id="weightInput" step="0.1" placeholder="70.0" />
         <span class="weight-unit">kg</span>
+        <button class="btn-save" onclick="saveWeightHandler()">記録</button>
       </div>
-      <p class="weight-hint">タップして入力</p>
-      
-      <button class="btn-primary" onclick="saveWeightHandler()">
-        記録する
-      </button>
-      
-      <p class="weight-info" id="weightInfo">
-        昨日の体重: -- kg
-      </p>
-    </section>
-    
-    <section class="card graph-card">
-      <h2 class="card-title">体重推移 <span class="card-sub">直近30日</span></h2>
-      <div class="graph-container">
+      <p id="weightInfo" class="weight-info">前回の体重: --kg</p>
+      <p class="weight-goal">目標: <span id="targetWeight">--</span>kg <span id="weightDiff" class="weight-diff">--</span></p>
+      <div class="chart-container">
         <canvas id="weightChart"></canvas>
       </div>
-      <div class="goal-display">
-        目標 <span id="targetWeight">--</span>kg
-        <span id="weightDiff" class="weight-diff">--</span>
-      </div>
     </section>
     
-    <section class="card pfc-card">
-      <h2 class="card-title">今日のPFCバランス</h2>
-      
-      <div class="pfc-item">
-        <div class="pfc-label">
-          <span>タンパク質</span>
-          <span class="pfc-value" id="pValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill p-fill" id="pBar" style="width: 0%;"></div>
-        </div>
-      </div>
-      
-      <div class="pfc-item">
-        <div class="pfc-label">
-          <span>脂質</span>
-          <span class="pfc-value" id="fValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill f-fill" id="fBar" style="width: 0%;"></div>
-        </div>
-      </div>
-      
-      <div class="pfc-item">
-        <div class="pfc-label">
-          <span>炭水化物</span>
-          <span class="pfc-value" id="cValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill c-fill" id="cBar" style="width: 0%;"></div>
-        </div>
-      </div>
-      
+    <!-- PFCカード -->
+    <section class="card">
+      <h2 class="card-title">今日の栄養バランス</h2>
       <div class="calorie-summary">
-        <span class="calorie-label">合計カロリー</span>
-        <span class="calorie-value"><span id="totalCalorie">--</span> / <span id="targetCalorie">--</span> kcal</span>
+        <p><span id="totalCalorie">0</span> / <span id="targetCalorie">--</span> kcal</p>
+      </div>
+      <div class="pfc-row">
+        <span class="pfc-label">P</span>
+        <div class="pfc-bar-wrap"><div id="pBar" class="pfc-bar pfc-p"></div></div>
+        <span id="pValue" class="pfc-value">0 / -- g</span>
+      </div>
+      <div class="pfc-row">
+        <span class="pfc-label">F</span>
+        <div class="pfc-bar-wrap"><div id="fBar" class="pfc-bar pfc-f"></div></div>
+        <span id="fValue" class="pfc-value">0 / -- g</span>
+      </div>
+      <div class="pfc-row">
+        <span class="pfc-label">C</span>
+        <div class="pfc-bar-wrap"><div id="cBar" class="pfc-bar pfc-c"></div></div>
+        <span id="cValue" class="pfc-value">0 / -- g</span>
       </div>
     </section>
     
-    <section class="card food-card">
-      <h2 class="card-title">今日の食事</h2>
-      <div id="foodList" class="food-list">
-        <div class="food-empty">まだ記録がありません</div>
-      </div>
-    </section>
-    
-    <section class="card recommend-card">
-      <h2 class="card-title">あなたへのおすすめ食材</h2>
-      <div id="recommendMessage" class="recommend-message">--</div>
-      <div id="recommendList" class="recommend-list"></div>
-    </section>
-    
+    <!-- 水分カード -->
     <section class="card water-card">
-      <h2 class="card-title">水分</h2>
-      
-      <div class="water-display">
-        <span id="waterTotal">--</span>L <span class="water-target">/ <span id="waterTarget">--</span>L</span>
-      </div>
-      
-      <div class="progress-bar water-progress">
-        <div class="progress-fill water-fill" id="waterBar" style="width: 0%;"></div>
-      </div>
-      
-      <div class="water-buttons">
-        <button class="btn-water" onclick="addWater(250)">+ 250ml</button>
-        <button class="btn-water" onclick="addWater(500)">+ 500ml</button>
-        <button class="btn-water" onclick="addWater(1000)">+ 1L</button>
+      <h2 class="card-title">今日の水分 💧</h2>
+      <p class="water-summary"><span id="waterTotal">0</span> / <span id="waterTarget">--</span> L</p>
+      <div class="water-bar-wrap"><div id="waterBar" class="water-bar"></div></div>
+      <div class="water-btns">
+        <button onclick="addWater(200)">+200ml</button>
+        <button onclick="addWater(500)">+500ml</button>
+        <button onclick="addWater(1000)">+1L</button>
       </div>
     </section>
     
+    <!-- 食事リスト -->
+    <section class="card food-card">
+      <h2 class="card-title">今日の食事記録</h2>
+      <div id="foodList"></div>
+    </section>
+    
+    <!-- おすすめ食材 -->
+    <section class="card recommend-card">
+      <h2 class="card-title">あなたへのおすすめ ♡</h2>
+      <p id="recommendMessage" class="recommend-message">データを読み込み中...</p>
+      <div id="recommendList"></div>
+    </section>
+    
+    <!-- チートデイ -->
     <section class="card cheat-card">
-      <h2 class="card-title">今週のチートデイ</h2>
+      <h2 class="card-title">今週のチートデイ 🎂</h2>
+      <p class="cheat-desc">週1日だけカロリー気にせず食べていい日。ストレス溜めずに続けるための日です。</p>
       <div id="weekCalendar" class="week-calendar"></div>
-      <div class="cheat-countdown" id="cheatCountdown">--</div>
-    </section>
-    
-    <section class="card streak-card">
-      <h2 class="card-title">連続記録</h2>
-      <div class="streak-display">
-        <span class="streak-number" id="streakDays">--</span>
-        <span class="streak-unit">日</span>
+      <div class="cheat-footer">
+        <p id="cheatCountdown" class="cheat-countdown">--</p>
+        <button class="btn-cheat-change" onclick="openCheatDayModal()">曜日を変更</button>
       </div>
-      <div class="streak-comment">この調子で続けましょう♡</div>
     </section>
     
-    <section class="account-section">
-      <details class="account-details">
-        <summary>アカウント設定</summary>
-        <div class="account-content">
-          <button class="btn-text" onclick="showProfile()">プロフィール変更</button>
-          <button class="btn-text" onclick="showGoal()">目標体重を変更</button>
-          <button class="btn-text-secondary" onclick="confirmPause()">サービスを休止する</button>
-          <button class="btn-text-danger" onclick="confirmWithdraw()">退会する</button>
-        </div>
-      </details>
+    <!-- 継続日数 -->
+    <section class="card streak-card">
+      <p>継続日数 <strong id="streakDays">0</strong> 日 ✨</p>
     </section>
     
-    <footer class="footer">
-      <p class="footer-brand">ONE BALANCE METHOD</p>
-      <p class="footer-sub">ONE-TRE 監修</p>
-    </footer>
+    <!-- 設定エリア -->
+    <section class="card settings-card">
+      <button class="btn-secondary" onclick="showProfile()">プロフィール設定</button>
+      <button class="btn-secondary" onclick="showGoal()">目標を変更</button>
+      <button class="btn-pause" onclick="confirmPause()">サービスを休止</button>
+      <button class="btn-withdraw" onclick="confirmWithdraw()">退会する</button>
+    </section>
     
   </div>
   
+  <!-- チートデイ変更モーダル -->
+  <div id="cheatDayModal" class="modal-overlay" style="display:none;">
+    <div class="modal-content">
+      <h3 class="modal-title">チートデイの曜日を選択</h3>
+      <p class="modal-desc">週に1日、好きなものを食べる日です</p>
+      <div class="cheat-day-options">
+        <button class="day-option" data-day="月">月曜日</button>
+        <button class="day-option" data-day="火">火曜日</button>
+        <button class="day-option" data-day="水">水曜日</button>
+        <button class="day-option" data-day="木">木曜日</button>
+        <button class="day-option" data-day="金">金曜日</button>
+        <button class="day-option" data-day="土">土曜日</button>
+        <button class="day-option" data-day="日">日曜日</button>
+        <button class="day-option day-option-none" data-day="なし">設定しない</button>
+      </div>
+      <button class="btn-modal-cancel" onclick="closeCheatDayModal()">キャンセル</button>
+    </div>
+  </div>
+  
+  <!-- エラーメッセージ -->
   <div id="errorMessage" class="error-message" style="display:none;">
-    <p id="errorText">エラーが発生しました</p>
+    <p id="errorText"></p>
     <button onclick="hideError()">閉じる</button>
   </div>
   
   <div id="toast" class="toast"></div>
   
   <script src="script.js"></script>
+  
+  <!-- Service Worker登録 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then((reg) => console.log('SW registered:', reg.scope))
+          .catch((err) => console.log('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
