@@ -1,30 +1,49 @@
-// ===== LIFF初期化 =====
+// ===== LIFF初期化 + localStorage対応(PWA対応) =====
 const LIFF_ID = "2010053759-1XwyFtST";
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
+const STORAGE_KEY = 'onetable_user_id';
 
 let lineUserId = '';
 
 async function initLiff() {
   try {
-    await liff.init({ liffId: LIFF_ID });
+    const savedUid = localStorage.getItem(STORAGE_KEY);
+    const isInLiff = window.location.href.includes('liff.line.me') || 
+                     window.parent !== window;
     
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
+    if (isInLiff || !savedUid) {
+      // LIFF経由 or 初回起動
+      await liff.init({ liffId: LIFF_ID });
+      
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      
+      const profile = await liff.getProfile();
+      lineUserId = profile.userId;
+      localStorage.setItem(STORAGE_KEY, lineUserId);
+      console.log("LIFFから取得 & 保存:", lineUserId);
+      
+    } else {
+      // PWA/ホーム画面起動
+      lineUserId = savedUid;
+      console.log("localStorageから取得:", lineUserId);
     }
     
-    const profile = await liff.getProfile();
-    lineUserId = profile.userId;
-    console.log("ユーザーID取得:", lineUserId);
-    
     loadProfile();
+    
   } catch (err) {
-    console.error("LIFF初期化エラー:", err);
-    // LIFF外で開いた場合のフォールバック
+    console.error("初期化エラー:", err);
+    
     const urlParams = new URLSearchParams(window.location.search);
-    lineUserId = urlParams.get('uid') || '';
+    const urlUid = urlParams.get('uid');
+    const savedUid = localStorage.getItem(STORAGE_KEY);
+    
+    lineUserId = urlUid || savedUid || '';
     
     if (lineUserId) {
+      if (urlUid) localStorage.setItem(STORAGE_KEY, urlUid);
       loadProfile();
     } else {
       showToast('LINEから開いてください', 'error');
@@ -119,8 +138,8 @@ function saveProfile() {
 }
 
 function goBack() {
-  // マイページのLIFF URLに戻る
-  window.location.href = 'https://liff.line.me/2010053759-TK9uAwtz';
+  // マイページに戻る(同じドメインなのでindex.htmlへ)
+  window.location.href = 'index.html';
 }
 
 function showToast(message, type = '') {
