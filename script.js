@@ -1,6 +1,7 @@
-// ===== LIFF初期化 =====
+// ===== LIFF初期化 + localStorage対応(PWA対応) =====
 const LIFF_ID = "2010053759-TK9uAwtz";
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
+const STORAGE_KEY = 'onetable_user_id';
 
 let lineUserId = '';
 let myData = null;
@@ -8,33 +9,59 @@ let weightChart = null;
 
 async function initLiff() {
   try {
-    await liff.init({ liffId: LIFF_ID });
+    // Step1: localStorageから保存済みUIDを取得試行
+    const savedUid = localStorage.getItem(STORAGE_KEY);
     
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
+    // Step2: LIFF環境かチェック
+    const isInLiff = window.location.href.includes('liff.line.me') || 
+                     window.parent !== window;
+    
+    if (isInLiff || !savedUid) {
+      // LIFF経由 or 初回起動: LIFF初期化を実行
+      await liff.init({ liffId: LIFF_ID });
+      
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      
+      const profile = await liff.getProfile();
+      lineUserId = profile.userId;
+      
+      // localStorageに保存(次回からホーム画面起動可能)
+      localStorage.setItem(STORAGE_KEY, lineUserId);
+      console.log("LIFFから取得 & 保存:", lineUserId);
+      
+    } else {
+      // PWA/ホーム画面起動: 保存済みUIDを使用
+      lineUserId = savedUid;
+      console.log("localStorageから取得:", lineUserId);
     }
     
-    const profile = await liff.getProfile();
-    lineUserId = profile.userId;
-    console.log("ユーザーID取得:", lineUserId);
-    
-    // LIFF取得完了後に画面初期化
+    // 画面初期化
     setGreeting();
     loadData();
     setupWeightInput();
+    
   } catch (err) {
-    console.error("LIFF初期化エラー:", err);
-    // LIFF外で開いた場合のフォールバック(URLパラメータのuid使用)
+    console.error("初期化エラー:", err);
+    
+    // フォールバック1: URLパラメータのuid
     const urlParams = new URLSearchParams(window.location.search);
-    lineUserId = urlParams.get('uid') || '';
+    const urlUid = urlParams.get('uid');
+    
+    // フォールバック2: localStorageのUID
+    const savedUid = localStorage.getItem(STORAGE_KEY);
+    
+    lineUserId = urlUid || savedUid || '';
     
     if (lineUserId) {
+      if (urlUid) localStorage.setItem(STORAGE_KEY, urlUid);
       setGreeting();
       loadData();
       setupWeightInput();
     } else {
-      alert("LINEから開いてください: " + err.message);
+      showError("初回はLINEのリッチメニューから開いてください");
     }
   }
 }
@@ -374,6 +401,40 @@ function addWater(ml) {
     });
 }
 
+// ===== チートデイ変更モーダル =====
+function openCheatDayModal() {
+  document.getElementById('cheatDayModal').style.display = 'flex';
+}
+
+function closeCheatDayModal() {
+  document.getElementById('cheatDayModal').style.display = 'none';
+}
+
+// 曜日ボタンクリック処理
+document.addEventListener('DOMContentLoaded', () => {
+  const options = document.querySelectorAll('.day-option');
+  options.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const day = btn.getAttribute('data-day');
+      saveCheatDay(day);
+    });
+  });
+});
+
+function saveCheatDay(day) {
+  showToast('変更中...', 'info');
+  
+  postToGas({ 
+    action: 'updateProfile', 
+    uid: lineUserId, 
+    profile: { cheatDay: day }
+  }).then(() => {
+    showToast(`チートデイを「${day === 'なし' ? '設定しない' : day + '曜日'}」に変更しました ✨`, 'success');
+    closeCheatDayModal();
+    setTimeout(() => loadData(), 1000);
+  });
+}
+
 function postToGas(data) {
   return fetch(GAS_URL, {
     method: 'POST',
@@ -385,11 +446,11 @@ function postToGas(data) {
 }
 
 function showProfile() {
-  window.location.href = `profile.html?uid=${lineUserId}`;
+  window.location.href = `profile.html`;
 }
 
 function showGoal() {
-  window.location.href = `profile.html?uid=${lineUserId}#goal`;
+  window.location.href = `profile.html#goal`;
 }
 
 function confirmPause() {
@@ -414,6 +475,8 @@ function confirmWithdraw() {
   
   postToGas({ action: 'withdraw', uid: lineUserId, reason: reasonText, satisfaction: satisfaction, comment: comment })
     .then(() => {
+      // 退会したらlocalStorageもクリア
+      localStorage.removeItem(STORAGE_KEY);
       showToast('退会処理が完了しました', 'success');
     });
 }
