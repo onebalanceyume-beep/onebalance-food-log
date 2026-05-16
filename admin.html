@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ONE BALANCE 管理画面</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: #F5F7FA;
+      color: #3D3D3D;
+      min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #DB444C 0%, #c03a41 100%);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(219,68,76,0.3);
+    }
+
+    .header-logo {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      opacity: 0.8;
+      letter-spacing: 0.1em;
+    }
+
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .last-updated {
+      font-size: 10px;
+      opacity: 0.7;
+    }
+
+    .btn-refresh {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .btn-refresh:active { opacity: 0.7; }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* ローディング */
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #eee;
+      border-top-color: #DB444C;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* サマリーカード */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .summary-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    .summary-card {
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .summary-card.accent {
+      background: linear-gradient(135deg, #DB444C, #c03a41);
+      color: white;
+    }
+
+    .summary-card.blue {
+      background: linear-gradient(135deg, #5BB9CD, #3da0b5);
+      color: white;
+    }
+
+    .summary-label {
+      font-size: 10px;
+      color: #999;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .summary-card.accent .summary-label,
+    .summary-card.blue .summary-label {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .summary-value {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: #DB444C;
+      line-height: 1;
+    }
+
+    .summary-card.accent .summary-value,
+    .summary-card.blue .summary-value {
+      color: white;
+    }
+
+    .summary-unit {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .summary-card.accent .summary-unit,
+    .summary-card.blue .summary-unit {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* セクション */
+    .section {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #3D3D3D;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 16px;
+      background: #DB444C;
+      border-radius: 2px;
+    }
+
+    /* グラフ行 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 500px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-box {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .chart-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #3D3D3D;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 14px;
+      background: #5BB9CD;
+      border-radius: 2px;
+    }
+
+    .chart-container {
+      height: 160px;
+      position: relative;
+    }
+
+    /* 売上表示 */
+    .revenue-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #F5F5F5;
+      font-size: 13px;
+    }
+
+    .revenue-row:last-child { border-bottom: none; }
+
+    .revenue-label { color: #888; }
+
+    .revenue-value {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: #DB444C;
+    }
+
+    .revenue-value.annual { color: #5BB9CD; }
+
+    /* 会員テーブル */
+    .member-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .member-table th {
+      background: #F8F8F8;
+      padding: 10px 12px;
+      text-align: left;
+      color: #888;
+      font-weight: 500;
+      border-bottom: 2px solid #F0F0F0;
+      white-space: nowrap;
+    }
+
+    .member-table td {
+      padding: 12px;
+      border-bottom: 1px solid #F8F8F8;
+      vertical-align: middle;
+    }
+
+    .member-table tr:last-child td { border-bottom: none; }
+
+    .member-table tr:hover td { background: #FAFAFA; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .status-active { background: #E8F7F0; color: #2E9B6A; }
+    .status-pause { background: #FFF5E0; color: #C87800; }
+    .status-withdraw { background: #FFE8E8; color: #CC3333; }
+
+    .plan-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .plan-monitor { background: #F0F0F0; color: #666; }
+    .plan-standard { background: #E8F0FF; color: #3366CC; }
+    .plan-premium { background: #FFF0E8; color: #CC6600; }
+
+    .weight-diff-good {
+      color: #5BB9CD;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .weight-diff-bad {
+      color: #DB444C;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .weight-diff-none {
+      color: #CCC;
+      font-size: 11px;
+    }
+
+    .to-goal-good { color: #2E9B6A; font-size: 11px; }
+    .to-goal-bad { color: #CC3333; font-size: 11px; }
+
+    /* プラン別内訳 */
+    .plan-summary {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .plan-item {
+      flex: 1;
+      min-width: 80px;
+      background: #F8F8F8;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .plan-item-name {
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .plan-item-count {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #DB444C;
+    }
+
+    .plan-item-fee {
+      font-size: 10px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* スマホ対応テーブル */
+    @media (max-width: 600px) {
+      .member-table th:nth-child(5),
+      .member-table td:nth-child(5) { display: none; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #BBB;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="header-logo">ONE BALANCE</div>
+      <div class="header-sub">トレーナー管理画面</div>
+    </div>
+    <div class="header-right">
+      <span class="last-updated" id="lastUpdated">--</span>
+      <button class="btn-refresh" onclick="loadData()">更新</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div id="loading" class="loading">
+      <div class="loading-spinner"></div>
+      <p>データを読み込み中...</p>
+    </div>
+
+    <div id="content" style="display:none;">
+
+      <!-- サマリーカード -->
+      <div class="summary-grid">
+        <div class="summary-card accent">
+          <div class="summary-label">アクティブ会員</div>
+          <div class="summary-value" id="totalActive">--</div>
+          <div class="summary-unit">名</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">総会員数</div>
+          <div class="summary-value" id="totalAll">--</div>
+          <div class="summary-unit">名（退会含む）</div>
+        </div>
+        <div class="summary-card blue">
+          <div class="summary-label">今月の売上</div>
+          <div class="summary-value" id="monthlyRevenue">--</div>
+          <div class="summary-unit">円</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-label">年間売上（見込み）</div>
+          <div class="summary-value" id="annualRevenue">--</div>
+          <div class="summary-unit">円</div>
+        </div>
+      </div>
+
+      <!-- グラフ行 -->
+      <div class="charts-grid">
+        <div class="chart-box">
+          <div class="chart-title">男女比</div>
+          <div class="chart-container">
+            <canvas id="genderChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">年代別</div>
+          <div class="chart-container">
+            <canvas id="ageChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- プラン別 -->
+      <div class="section">
+        <div class="section-title">プラン別内訳</div>
+        <div class="plan-summary">
+          <div class="plan-item">
+            <div class="plan-item-name">モニター</div>
+            <div class="plan-item-count" id="planMonitor">--</div>
+            <div class="plan-item-fee">¥2,200/月</div>
+          </div>
+          <div class="plan-item">
+            <div class="plan-item-name">スタンダード</div>
+            <div class="plan-item-count" id="planStandard">--</div>
+            <div class="plan-item-fee">¥3,980/月</div>
+          </div>
+          <div class="plan-item">
+            <div class="plan-item-name">プレミアム</div>
+            <div class="plan-item-count" id="planPremium">--</div>
+            <div class="plan-item-fee">¥8,800/月</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 会員一覧 -->
+      <div class="section">
+        <div class="section-title">会員一覧</div>
+        <div style="overflow-x: auto;">
+          <table class="member-table">
+            <thead>
+              <tr>
+                <th>呼び方</th>
+                <th>ステータス</th>
+                <th>プラン</th>
+                <th>スタートからの変化</th>
+                <th>目標まで</th>
+                <th>登録日</th>
+              </tr>
+            </thead>
+            <tbody id="memberTableBody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+
+  </div><!-- /container -->
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxwczCM82WBjyjURd6D6Dn66mtLb9oUVWiWxQrJx4IhcWPnlMlC3nRZoQdhGXK1K09m/exec';
+
+    let genderChart = null;
+    let ageChart = null;
+
+    function loadData() {
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('content').style.display = 'none';
+
+      fetch(`${GAS_URL}?action=getAdminData`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            alert('エラー: ' + data.error);
+            document.getElementById('loading').style.display = 'none';
+            return;
+          }
+          renderDashboard(data);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('content').style.display = 'block';
+
+          const now = new Date();
+          document.getElementById('lastUpdated').textContent =
+            `最終更新: ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+        })
+        .catch(err => {
+          alert('読み込みに失敗しました');
+          document.getElementById('loading').style.display = 'none';
+          console.error(err);
+        });
+    }
+
+    function renderDashboard(data) {
+      const s = data.stats;
+
+      // サマリー
+      document.getElementById('totalActive').textContent = s.totalActive;
+      document.getElementById('totalAll').textContent = s.totalAll;
+      document.getElementById('monthlyRevenue').textContent = s.monthlyRevenue.toLocaleString();
+      document.getElementById('annualRevenue').textContent = s.annualRevenue.toLocaleString();
+
+      // プラン別
+      document.getElementById('planMonitor').textContent = s.planCount['モニター'] || 0;
+      document.getElementById('planStandard').textContent = s.planCount['スタンダード'] || 0;
+      document.getElementById('planPremium').textContent = s.planCount['プレミアム'] || 0;
+
+      // 男女比グラフ
+      if (genderChart) genderChart.destroy();
+      const genderCtx = document.getElementById('genderChart').getContext('2d');
+      genderChart = new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['男性', '女性'],
+          datasets: [{
+            data: [s.maleCount, s.femaleCount],
+            backgroundColor: ['#5BB9CD', '#E89AAA'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { font: { size: 11 }, padding: 12 }
+            }
+          }
+        }
+      });
+
+      // 年代別グラフ
+      if (ageChart) ageChart.destroy();
+      const ageCtx = document.getElementById('ageChart').getContext('2d');
+      const ageLabels = Object.keys(s.ageGroups);
+      const ageValues = Object.values(s.ageGroups);
+      ageChart = new Chart(ageCtx, {
+        type: 'bar',
+        data: {
+          labels: ageLabels,
+          datasets: [{
+            data: ageValues,
+            backgroundColor: '#DB444C',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, font: { size: 10 } },
+              grid: { color: '#F0F0F0' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 10 } }
+            }
+          }
+        }
+      });
+
+      // 会員テーブル
+      const tbody = document.getElementById('memberTableBody');
+      if (!data.members || data.members.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">会員データがありません</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.members.map(m => {
+        // ステータスバッジ
+        let statusClass = 'status-active';
+        let statusLabel = m.status || '継続中';
+        if (m.status === '退会') { statusClass = 'status-withdraw'; statusLabel = '退会'; }
+        else if (m.status === '休止') { statusClass = 'status-pause'; statusLabel = '休止'; }
+
+        // プランバッジ
+        let planClass = 'plan-monitor';
+        if (m.plan === 'スタンダード') planClass = 'plan-standard';
+        else if (m.plan === 'プレミアム') planClass = 'plan-premium';
+        const planLabel = m.plan || '未設定';
+
+        // 体重差分（絶対値は表示しない）
+        let weightDiffHtml = '<span class="weight-diff-none">記録なし</span>';
+        if (m.weightDiff !== null) {
+          const sign = m.weightDiff <= 0 ? '' : '+';
+          const cls = m.weightDiff <= 0 ? 'weight-diff-good' : 'weight-diff-bad';
+          weightDiffHtml = `<span class="${cls}">${sign}${m.weightDiff}kg</span>`;
+        }
+
+        // 目標まで
+        let toGoalHtml = '<span class="weight-diff-none">--</span>';
+        if (m.toGoal !== null) {
+          if (m.toGoal <= 0) {
+            toGoalHtml = `<span class="to-goal-good">達成 🎉</span>`;
+          } else {
+            toGoalHtml = `<span class="to-goal-bad">あと -${m.toGoal}kg</span>`;
+          }
+        }
+
+        return `
+          <tr>
+            <td><strong>${m.nickname || '--'}</strong></td>
+            <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+            <td><span class="plan-badge ${planClass}">${planLabel}</span></td>
+            <td>${weightDiffHtml}</td>
+            <td>${toGoalHtml}</td>
+            <td style="color:#999; font-size:11px;">${m.registeredDate || '--'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 初回読み込み
+    loadData();
+  </script>
+
+</body>
+</html>
