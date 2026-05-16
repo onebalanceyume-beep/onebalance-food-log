@@ -9,15 +9,11 @@ let weightChart = null;
 
 async function initLiff() {
   try {
-    // Step1: localStorageから保存済みUIDを取得試行
     const savedUid = localStorage.getItem(STORAGE_KEY);
-    
-    // Step2: LIFF環境かチェック
     const isInLiff = window.location.href.includes('liff.line.me') || 
                      window.parent !== window;
     
     if (isInLiff || !savedUid) {
-      // LIFF経由 or 初回起動: LIFF初期化を実行
       await liff.init({ liffId: LIFF_ID });
       
       if (!liff.isLoggedIn()) {
@@ -27,18 +23,14 @@ async function initLiff() {
       
       const profile = await liff.getProfile();
       lineUserId = profile.userId;
-      
-      // localStorageに保存(次回からホーム画面起動可能)
       localStorage.setItem(STORAGE_KEY, lineUserId);
       console.log("LIFFから取得 & 保存:", lineUserId);
       
     } else {
-      // PWA/ホーム画面起動: 保存済みUIDを使用
       lineUserId = savedUid;
       console.log("localStorageから取得:", lineUserId);
     }
     
-    // 画面初期化
     setGreeting();
     loadData();
     setupWeightInput();
@@ -46,11 +38,8 @@ async function initLiff() {
   } catch (err) {
     console.error("初期化エラー:", err);
     
-    // フォールバック1: URLパラメータのuid
     const urlParams = new URLSearchParams(window.location.search);
     const urlUid = urlParams.get('uid');
-    
-    // フォールバック2: localStorageのUID
     const savedUid = localStorage.getItem(STORAGE_KEY);
     
     lineUserId = urlUid || savedUid || '';
@@ -71,28 +60,20 @@ window.addEventListener('DOMContentLoaded', initLiff);
 function setGreeting() {
   const hour = new Date().getHours();
   let text = 'おはようございます';
-  
-  if (hour >= 11 && hour < 15) {
-    text = 'こんにちは';
-  } else if (hour >= 15 && hour < 18) {
-    text = 'お疲れ様です';
-  } else if (hour >= 18 || hour < 5) {
-    text = 'こんばんは';
-  }
-  
+  if (hour >= 11 && hour < 15) text = 'こんにちは';
+  else if (hour >= 15 && hour < 18) text = 'お疲れ様です';
+  else if (hour >= 18 || hour < 5) text = 'こんばんは';
   document.getElementById('greetingText').textContent = text;
 }
 
 function setupWeightInput() {
   const input = document.getElementById('weightInput');
-  
   input.addEventListener('focus', () => {
     input.value = '';
   });
-  
   input.addEventListener('blur', () => {
-    if (input.value === '' && myData && myData.member) {
-      input.value = myData.member.currentWeight || 70.0;
+    if (input.value === '') {
+      input.value = '';
     }
   });
 }
@@ -131,26 +112,17 @@ function handleHashScroll() {
   
   setTimeout(() => {
     let targetEl = null;
-    
-    if (hash === '#weight') {
-      targetEl = document.querySelector('.weight-card');
-    } else if (hash === '#food') {
-      targetEl = document.querySelector('.food-card');
-    } else if (hash === '#water') {
-      targetEl = document.querySelector('.water-card');
-    } else if (hash === '#cheat') {
-      targetEl = document.querySelector('.cheat-card');
-    } else if (hash === '#recommend') {
-      targetEl = document.querySelector('.recommend-card');
-    }
+    if (hash === '#weight') targetEl = document.querySelector('.weight-card');
+    else if (hash === '#food') targetEl = document.querySelector('.food-card');
+    else if (hash === '#water') targetEl = document.querySelector('.water-card');
+    else if (hash === '#cheat') targetEl = document.querySelector('.cheat-card');
+    else if (hash === '#recommend') targetEl = document.querySelector('.recommend-card');
     
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       targetEl.style.transition = 'transform 0.3s ease';
       targetEl.style.transform = 'scale(1.02)';
-      setTimeout(() => {
-        targetEl.style.transform = 'scale(1)';
-      }, 300);
+      setTimeout(() => { targetEl.style.transform = 'scale(1)'; }, 300);
     }
   }, 300);
 }
@@ -161,19 +133,42 @@ function renderPage(data) {
   
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
   
+  // 体重入力欄：数値を先に見せない
   const weightInput = document.getElementById('weightInput');
   weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
-  weightInput.value = m.currentWeight || 70.0;
-  
-  document.getElementById('targetWeight').textContent = m.targetWeight || '--';
-  
-  if (data.weightHistory && data.weightHistory.length > 0) {
-    const lastWeight = data.weightHistory[data.weightHistory.length - 1].weight;
-    document.getElementById('weightInfo').textContent = `前回の体重: ${lastWeight}kg`;
+  weightInput.value = '';
+
+  // 前回からの差分表示
+  if (data.weightHistory && data.weightHistory.length >= 2) {
+    const history = data.weightHistory;
+    const latest = history[history.length - 1].weight;
+    const prev = history[history.length - 2].weight;
+    const diff = (latest - prev).toFixed(1);
+    const sign = diff > 0 ? '+' : '';
     
-    const diffEl = document.getElementById('weightDiff');
-    const goalDiff = (m.currentWeight - m.targetWeight).toFixed(1);
-    diffEl.textContent = goalDiff > 0 ? `あと -${goalDiff}kg` : `達成`;
+    const changeDisplay = document.getElementById('weightChangeDisplay');
+    const changeValue = document.getElementById('weightChangeValue');
+    const changeSince = document.getElementById('weightChangeSince');
+    
+    changeDisplay.style.display = 'block';
+    changeValue.textContent = `${sign}${diff}kg`;
+    changeValue.className = 'weight-change-value ' + (diff <= 0 ? 'change-down' : 'change-up');
+    changeSince.textContent = `${history[history.length - 2].date} の記録から`;
+  }
+
+  // スタートからの差分表示
+  if (data.weightHistory && data.weightHistory.length >= 2) {
+    const history = data.weightHistory;
+    const first = history[0].weight;
+    const latest = history[history.length - 1].weight;
+    const totalDiff = (latest - first).toFixed(1);
+    const sign = totalDiff > 0 ? '+' : '';
+    
+    const startDisplay = document.getElementById('startDiffDisplay');
+    const startValue = document.getElementById('startDiffValue');
+    startDisplay.style.display = 'block';
+    startValue.textContent = `${sign}${totalDiff}kg の変化`;
+    startValue.className = 'weight-diff ' + (totalDiff <= 0 ? 'diff-good' : 'diff-warn');
   }
   
   drawWeightChart(data.weightHistory);
@@ -188,12 +183,10 @@ function renderPage(data) {
 
 function renderFoodList(foods) {
   const container = document.getElementById('foodList');
-  
   if (!foods || foods.length === 0) {
     container.innerHTML = '<div class="food-empty">まだ記録がありません<br>LINEで食事写真を送ってください</div>';
     return;
   }
-  
   container.innerHTML = foods.map(f => `
     <div class="food-item">
       <div class="food-time">${f.time}</div>
@@ -250,7 +243,6 @@ function renderWeekCalendar(cheatDayName) {
   
   const today = new Date();
   const todayDow = today.getDay();
-  
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((todayDow + 6) % 7));
   
@@ -260,7 +252,6 @@ function renderWeekCalendar(cheatDayName) {
   for (let i = 0; i < 7; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
-    
     const dow = date.getDay();
     const dateNum = date.getDate();
     const isToday = date.toDateString() === today.toDateString();
@@ -317,7 +308,6 @@ function renderPFC(today, member) {
 function renderWater(currentMl, targetL) {
   const currentL = (currentMl / 1000).toFixed(1);
   const rate = Math.min((currentMl / 1000 / targetL * 100) || 0, 100);
-  
   document.getElementById('waterTotal').textContent = currentL;
   document.getElementById('waterTarget').textContent = targetL || '--';
   document.getElementById('waterBar').style.width = rate + '%';
@@ -326,9 +316,7 @@ function renderWater(currentMl, targetL) {
 function drawWeightChart(history) {
   const ctx = document.getElementById('weightChart').getContext('2d');
   
-  if (weightChart) {
-    weightChart.destroy();
-  }
+  if (weightChart) weightChart.destroy();
   
   if (!history || history.length === 0) {
     ctx.font = '11px sans-serif';
@@ -343,7 +331,7 @@ function drawWeightChart(history) {
     data: {
       labels: history.map(h => h.date),
       datasets: [{
-        label: '体重',
+        label: '変化',
         data: history.map(h => h.weight),
         borderColor: '#7AA8D8',
         backgroundColor: 'rgba(165, 200, 235, 0.2)',
@@ -357,12 +345,17 @@ function drawWeightChart(history) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: () => '記録あり'
+          }
+        }
+      },
       scales: {
         y: {
-          beginAtZero: false,
-          grid: { color: 'rgba(165, 200, 235, 0.15)' },
-          ticks: { font: { size: 10 }, color: '#8FA8BD' }
+          display: false  // Y軸の数値を完全非表示
         },
         x: {
           grid: { display: false },
@@ -388,20 +381,17 @@ function saveWeightHandler() {
   postToGas({ action: 'saveWeight', uid: lineUserId, weight: weight })
     .then(() => {
       showToast('体重を記録しました ✨', 'success');
+      input.value = '';
       setTimeout(() => loadData(), 1000);
     });
 }
 
 function addWater(ml) {
   showToast(`水分 ${ml}ml 追加 💧`, 'success');
-  
   postToGas({ action: 'saveWater', uid: lineUserId, ml: ml })
-    .then(() => {
-      setTimeout(() => loadData(), 800);
-    });
+    .then(() => { setTimeout(() => loadData(), 800); });
 }
 
-// ===== チートデイ変更モーダル =====
 function openCheatDayModal() {
   document.getElementById('cheatDayModal').style.display = 'flex';
 }
@@ -410,7 +400,6 @@ function closeCheatDayModal() {
   document.getElementById('cheatDayModal').style.display = 'none';
 }
 
-// 曜日ボタンクリック処理
 document.addEventListener('DOMContentLoaded', () => {
   const options = document.querySelectorAll('.day-option');
   options.forEach(btn => {
@@ -423,7 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveCheatDay(day) {
   showToast('変更中...', 'info');
-  
   postToGas({ 
     action: 'updateProfile', 
     uid: lineUserId, 
@@ -475,7 +463,6 @@ function confirmWithdraw() {
   
   postToGas({ action: 'withdraw', uid: lineUserId, reason: reasonText, satisfaction: satisfaction, comment: comment })
     .then(() => {
-      // 退会したらlocalStorageもクリア
       localStorage.removeItem(STORAGE_KEY);
       showToast('退会処理が完了しました', 'success');
     });
@@ -485,10 +472,7 @@ function showToast(message, type = '') {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.className = 'toast show ' + type;
-  
-  setTimeout(() => {
-    toast.className = 'toast';
-  }, 3000);
+  setTimeout(() => { toast.className = 'toast'; }, 3000);
 }
 
 function showError(message) {
