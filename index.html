@@ -39,32 +39,39 @@
       <p><span id="greetingText">おはようございます</span>、<span id="nickname">--</span>さん</p>
     </div>
     
+    <!-- 体重カード（体重非表示版） -->
     <section class="card weight-card">
-      <h2 class="card-title">今日の体重</h2>
+      <h2 class="card-title">今日の体重を記録</h2>
+      
+      <p class="weight-privacy-copy">体重の数字、見ません。見るのは変化だけ。</p>
       
       <div class="weight-display-wrapper">
-        <input type="number" id="weightInput" step="0.1" inputmode="decimal" value="70.0" />
+        <input type="number" id="weightInput" step="0.1" inputmode="decimal" placeholder="70.0" />
         <span class="weight-unit">kg</span>
       </div>
-      <p class="weight-hint">タップして入力</p>
+      <p class="weight-hint">この数字はあなただけのもの。トレーナーには見えません。</p>
       
       <button class="btn-primary" onclick="saveWeightHandler()">
         記録する
       </button>
       
-      <p class="weight-info" id="weightInfo">
-        昨日の体重: -- kg
-      </p>
+      <!-- 差分だけ表示 -->
+      <div class="weight-change-display" id="weightChangeDisplay" style="display:none;">
+        <div class="weight-change-label">前回からの変化</div>
+        <div class="weight-change-value" id="weightChangeValue">--</div>
+        <div class="weight-change-since" id="weightChangeSince">--</div>
+      </div>
     </section>
-    
+
+    <!-- グラフカード（Y軸非表示版） -->
     <section class="card graph-card">
-      <h2 class="card-title">体重推移 <span class="card-sub">直近30日</span></h2>
+      <h2 class="card-title">変化のグラフ <span class="card-sub">直近30日</span></h2>
+      <p class="graph-note">数字じゃなく、形で変化を見ましょう</p>
       <div class="graph-container">
         <canvas id="weightChart"></canvas>
       </div>
-      <div class="goal-display">
-        目標 <span id="targetWeight">--</span>kg
-        <span id="weightDiff" class="weight-diff">--</span>
+      <div class="goal-display" id="startDiffDisplay" style="display:none;">
+        スタートから <span id="startDiffValue" class="weight-diff">--</span>
       </div>
     </section>
     
