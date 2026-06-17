@@ -524,6 +524,7 @@ function renderRecent(menus) {
   document.getElementById('recentMenus').innerHTML = menus.map(function(m, i){
     return '<button onclick="logFood(' + i + ')" style="background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">' + m.menu + '</button>';
   }).join('');
+  if (!recMeal) initRecDefaults();
 }
 let viewDaysAgo = 1;
 function changeDay(delta) {
@@ -556,7 +557,39 @@ function renderDay(d) {
 function logFood(i) {
   const item = (window.__recent || [])[i];
   if (!item) return;
-  showToast(item.menu + ' を記録 ✨', 'success');
-  postToGas({ action: 'logFood', uid: lineUserId, food: item })
+  const food = Object.assign({}, item, { daysAgo: recDay, mealType: recMeal || null });
+  const where = (recDay === 1 ? '昨日' : '今日') + (recMeal ? 'の' + recMeal.replace('食', '') : '');
+  showToast(item.menu + ' を' + where + 'に記録 ✨', 'success');
+  postToGas({ action: 'logFood', uid: lineUserId, food: food })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
+}
+let recDay = 0;
+let recMeal = '';
+function setRecDay(d, btn) {
+  recDay = d;
+  document.querySelectorAll('.rec-day').forEach(function(b){ b.style.background = '#fff'; b.style.color = '#5BB9CD'; });
+  btn.style.background = '#5BB9CD'; btn.style.color = '#fff';
+}
+function setRecMeal(m, btn) {
+  recMeal = m;
+  document.querySelectorAll('.rec-meal').forEach(function(b){ b.style.background = '#fff'; b.style.color = '#DB444C'; });
+  btn.style.background = '#DB444C'; btn.style.color = '#fff';
+}
+function initRecDefaults() {
+  const h = new Date().getHours();
+  let m = '昼食';
+  if (h < 10) m = '朝食'; else if (h < 15) m = '昼食'; else if (h < 21) m = '夕食'; else m = '間食';
+  recMeal = m;
+  document.querySelectorAll('.rec-meal').forEach(function(b){
+    if (b.getAttribute('data-meal') === m) { b.style.background = '#DB444C'; b.style.color = '#fff'; }
+  });
+}
+function addMenu() {
+  const input = document.getElementById('newMenuInput');
+  const name = (input.value || '').trim();
+  if (!name) { showToast('メニュー名を入れてください', 'error'); return; }
+  showToast('AIが計算中...', 'info');
+  input.value = '';
+  postToGas({ action: 'addMenu', uid: lineUserId, menuName: name })
+    .then(function(){ setTimeout(function(){ loadData(); }, 1800); });
 }
