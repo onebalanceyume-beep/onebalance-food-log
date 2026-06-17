@@ -143,6 +143,13 @@
         <button class="btn-water" onclick="addWater(500)">+ 500ml</button>
         <button class="btn-water" onclick="addWater(1000)">+ 1L</button>
       </div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <input type="number" id="waterManualInput" inputmode="numeric" pattern="[0-9]*" min="1" max="3000" placeholder="数字を入力"
+          style="flex:1;min-width:0;padding:10px 12px;border:1.5px solid #5BB9CD;border-radius:10px;font-size:16px;font-family:inherit;text-align:center;-webkit-appearance:none;appearance:none">
+        <span style="font-size:13px;color:#888;font-weight:700">ml</span>
+        <button onclick="addWaterManual()"
+          style="background:#5BB9CD;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;font-family:inherit;white-space:nowrap;cursor:pointer">追加</button>
+      </div>
     </section>
     
     <section class="card cheat-card">
