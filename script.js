@@ -173,6 +173,8 @@ function renderPage(data) {
   
   drawWeightChart(data.weightHistory);
   renderFoodList(t.foods);
+  renderYesterday(data.yesterday);
+  renderRecent(data.recentMenus);
   renderPFC(t, m);
   renderWater(t.water, m.targetWater);
   renderRecommend(data.recommendedFoods);
@@ -494,4 +496,31 @@ function showError(message) {
 
 function hideError() {
   document.getElementById('errorMessage').style.display = 'none';
+}
+function renderYesterday(y) {
+  const card = document.getElementById('yesterdayCard');
+  if (!card) return;
+  if (!y || !y.foods || y.foods.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('yesterdaySummary').textContent =
+    `合計 ${Math.round(y.totalCalorie)}kcal ／ P:${y.totalP.toFixed(1)}g F:${y.totalF.toFixed(1)}g C:${y.totalC.toFixed(1)}g`;
+  document.getElementById('yesterdayFoods').innerHTML = y.foods.map(f => `
+    <div class="food-item">
+      <div>
+        <span class="food-meal">${f.mealType}</span>
+        <span class="food-menu">${f.menu}</span>
+      </div>
+      <div class="food-pfc">${f.calorie}kcal</div>
+    </div>
+  `).join('');
+}
+
+function renderRecent(menus) {
+  const card = document.getElementById('recentCard');
+  if (!card) return;
+  if (!menus || menus.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  document.getElementById('recentMenus').innerHTML = menus.map(m => `
+    <span style="display:inline-block;background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;">${m}</span>
+  `).join('');
 }
