@@ -524,3 +524,31 @@ function renderRecent(menus) {
     <span style="display:inline-block;background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;">${m}</span>
   `).join('');
 }
+let viewDaysAgo = 1;
+function changeDay(delta) {
+  const next = viewDaysAgo + delta;
+  if (next < 0) return;
+  viewDaysAgo = next;
+  loadDay();
+}
+function loadDay() {
+  fetch(GAS_URL + '?action=getDayData&uid=' + lineUserId + '&days=' + viewDaysAgo)
+    .then(function(res){ return res.json(); })
+    .then(function(d){ if (!d || d.error) return; renderDay(d); })
+    .catch(function(err){ console.error(err); });
+}
+function renderDay(d) {
+  const label = document.getElementById('dayLabel');
+  const summary = document.getElementById('yesterdaySummary');
+  const list = document.getElementById('yesterdayFoods');
+  const nextBtn = document.getElementById('dayNext');
+  if (label) label.textContent = (d.daysAgo === 0 ? '今日' : d.daysAgo === 1 ? '昨日' : d.dateLabel) + 'の記録';
+  if (nextBtn) nextBtn.style.visibility = (d.daysAgo === 0 ? 'hidden' : 'visible');
+  if (!d.foods || d.foods.length === 0) {
+    if (summary) summary.textContent = '';
+    if (list) list.innerHTML = '<div class="food-empty">この日の記録はありません</div>';
+    return;
+  }
+  if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
+  if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div></div>'; }).join('');
+}
