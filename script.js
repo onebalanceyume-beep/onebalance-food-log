@@ -173,7 +173,7 @@ function renderPage(data) {
   
   drawWeightChart(data.weightHistory);
   renderFoodList(t.foods);
-  renderYesterday(data.yesterday);
+  viewDaysAgo = 1; loadDay();
   renderRecent(data.recentMenus);
   renderPFC(t, m);
   renderWater(t.water, m.targetWater);
