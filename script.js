@@ -520,9 +520,10 @@ function renderRecent(menus) {
   if (!card) return;
   if (!menus || menus.length === 0) { card.style.display = 'none'; return; }
   card.style.display = 'block';
-  document.getElementById('recentMenus').innerHTML = menus.map(m => `
-    <span style="display:inline-block;background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;">${m}</span>
-  `).join('');
+  window.__recent = menus;
+  document.getElementById('recentMenus').innerHTML = menus.map(function(m, i){
+    return '<button onclick="logFood(' + i + ')" style="background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">' + m.menu + '</button>';
+  }).join('');
 }
 let viewDaysAgo = 1;
 function changeDay(delta) {
@@ -551,4 +552,11 @@ function renderDay(d) {
   }
   if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
   if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div></div>'; }).join('');
+}
+function logFood(i) {
+  const item = (window.__recent || [])[i];
+  if (!item) return;
+  showToast(item.menu + ' を記録 ✨', 'success');
+  postToGas({ action: 'logFood', uid: lineUserId, food: item })
+    .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
