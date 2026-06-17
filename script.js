@@ -391,6 +391,17 @@ function addWater(ml) {
   postToGas({ action: 'saveWater', uid: lineUserId, ml: ml })
     .then(() => { setTimeout(() => loadData(), 800); });
 }
+function addWaterManual() {
+  const input = document.getElementById('waterManualInput');
+  const ml = parseInt(input.value, 10);
+  if (!ml || ml < 1 || ml > 3000) {
+    showToast('1〜3000の数字を入力してください', 'error');
+    return;
+  }
+  input.value = '';
+  input.blur();
+  addWater(ml);
+}
 
 function openCheatDayModal() {
   document.getElementById('cheatDayModal').style.display = 'flex';
