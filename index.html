@@ -127,8 +127,12 @@
       <div id="recommendList" class="recommend-list"></div>
     </section>
     
-      <section class="card" id="yesterdayCard" style="display:none;">
-      <h2 class="card-title">昨日の記録</h2>
+    <section class="card" id="yesterdayCard">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
+        <button onclick="changeDay(1)" style="background:#5BB9CD;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">◀ 前の日</button>
+        <h2 class="card-title" id="dayLabel" style="margin:0;font-size:15px;">昨日の記録</h2>
+        <button id="dayNext" onclick="changeDay(-1)" style="background:#5BB9CD;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">次の日 ▶</button>
+      </div>
       <div id="yesterdaySummary" style="font-size:13px;color:#555;margin-bottom:10px;font-weight:700;"></div>
       <div id="yesterdayFoods" class="food-list"></div>
     </section>
