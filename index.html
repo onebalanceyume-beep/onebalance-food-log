@@ -96,10 +96,27 @@
       <div id="yesterdayFoods" class="food-list"></div>
     </section>
 
-    <section class="card" id="recentCard" style="display:none;">
+   <section class="card" id="recentCard" style="display:none;">
       <h2 class="card-title">よく食べる物</h2>
-      <p style="font-size:12px;color:#888;margin:0 0 10px;">タップでそのまま記録できます</p>
+      <p style="font-size:12px;color:#888;margin:0 0 10px;">記録先を選んでタップ → そのまま記録できます</p>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="rec-day" data-day="0" onclick="setRecDay(0,this)" style="flex:1;padding:8px;border:1.5px solid #5BB9CD;background:#5BB9CD;color:#fff;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">今日</button>
+        <button class="rec-day" data-day="1" onclick="setRecDay(1,this)" style="flex:1;padding:8px;border:1.5px solid #5BB9CD;background:#fff;color:#5BB9CD;border-radius:8px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;">昨日</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <button class="rec-meal" data-meal="朝食" onclick="setRecMeal('朝食',this)" style="flex:1;padding:8px 4px;border:1.5px solid #DB444C;background:#fff;color:#DB444C;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">朝</button>
+        <button class="rec-meal" data-meal="昼食" onclick="setRecMeal('昼食',this)" style="flex:1;padding:8px 4px;border:1.5px solid #DB444C;background:#fff;color:#DB444C;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">昼</button>
+        <button class="rec-meal" data-meal="夕食" onclick="setRecMeal('夕食',this)" style="flex:1;padding:8px 4px;border:1.5px solid #DB444C;background:#fff;color:#DB444C;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">夜</button>
+        <button class="rec-meal" data-meal="間食" onclick="setRecMeal('間食',this)" style="flex:1;padding:8px 4px;border:1.5px solid #DB444C;background:#fff;color:#DB444C;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">間食</button>
+      </div>
       <div id="recentMenus" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      <div style="margin-top:14px;border-top:1px solid #f0d0d3;padding-top:12px;">
+        <p style="font-size:12px;color:#888;margin:0 0 8px;">よく食べる物を登録（メニュー名だけでOK・AIが計算）</p>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="newMenuInput" placeholder="例：鶏むね肉サラダ" style="flex:1;min-width:0;padding:10px 12px;border:1.5px solid #DB444C;border-radius:10px;font-size:16px;font-family:inherit;-webkit-appearance:none;appearance:none;">
+          <button onclick="addMenu()" style="background:#DB444C;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;font-family:inherit;white-space:nowrap;cursor:pointer;">登録</button>
+        </div>
+      </div>
     </section>
 
     <section class="card food-card">
