@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
   <title>ONE TABLE</title>
-  
+
   <!-- PWA設定 -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#E89AAA">
@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="ONE TABLE">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="icon" type="image/png" href="icon.png">
-  
+
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,40 +22,32 @@
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-  
+
   <div id="loading" class="loading">
     <div class="loading-spinner"></div>
     <p>読み込み中...</p>
   </div>
-  
+
   <div id="app" class="app" style="display:none;">
-    
+
     <header class="header">
-      <h1 class="logo">ONE BALANCE</h1>
+      <h1 class="logo">ONE TABLE</h1>
       <p class="logo-sub">食事サポート</p>
     </header>
-    
+
     <div class="greeting">
       <p><span id="greetingText">おはようございます</span>、<span id="nickname">--</span>さん</p>
     </div>
-    
-    <!-- 体重カード（体重非表示版） -->
+
     <section class="card weight-card">
       <h2 class="card-title">今日の体重を記録</h2>
-      
       <p class="weight-privacy-copy">体重の数字、見ません。見るのは変化だけ。</p>
-      
       <div class="weight-display-wrapper">
         <input type="number" id="weightInput" step="0.1" inputmode="decimal" placeholder="70.0" />
         <span class="weight-unit">kg</span>
       </div>
       <p class="weight-hint">この数字はあなただけのもの。トレーナーには見えません。</p>
-      
-      <button class="btn-primary" onclick="saveWeightHandler()">
-        記録する
-      </button>
-      
-      <!-- 差分だけ表示 -->
+      <button class="btn-primary" onclick="saveWeightHandler()">記録する</button>
       <div class="weight-change-display" id="weightChangeDisplay" style="display:none;">
         <div class="weight-change-label">前回からの変化</div>
         <div class="weight-change-value" id="weightChangeValue">--</div>
@@ -63,7 +55,6 @@
       </div>
     </section>
 
-    <!-- グラフカード（Y軸非表示版） -->
     <section class="card graph-card">
       <h2 class="card-title">変化のグラフ <span class="card-sub">直近30日</span></h2>
       <p class="graph-note">数字じゃなく、形で変化を見ましょう</p>
@@ -74,59 +65,27 @@
         スタートから <span id="startDiffValue" class="weight-diff">--</span>
       </div>
     </section>
-    
+
     <section class="card pfc-card">
       <h2 class="card-title">今日のPFCバランス</h2>
-      
       <div class="pfc-item">
-        <div class="pfc-label">
-          <span>タンパク質</span>
-          <span class="pfc-value" id="pValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill p-fill" id="pBar" style="width: 0%;"></div>
-        </div>
+        <div class="pfc-label"><span>タンパク質</span><span class="pfc-value" id="pValue">-- / -- g</span></div>
+        <div class="progress-bar"><div class="progress-fill p-fill" id="pBar" style="width: 0%;"></div></div>
       </div>
-      
       <div class="pfc-item">
-        <div class="pfc-label">
-          <span>脂質</span>
-          <span class="pfc-value" id="fValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill f-fill" id="fBar" style="width: 0%;"></div>
-        </div>
+        <div class="pfc-label"><span>脂質</span><span class="pfc-value" id="fValue">-- / -- g</span></div>
+        <div class="progress-bar"><div class="progress-fill f-fill" id="fBar" style="width: 0%;"></div></div>
       </div>
-      
       <div class="pfc-item">
-        <div class="pfc-label">
-          <span>炭水化物</span>
-          <span class="pfc-value" id="cValue">-- / -- g</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill c-fill" id="cBar" style="width: 0%;"></div>
-        </div>
+        <div class="pfc-label"><span>炭水化物</span><span class="pfc-value" id="cValue">-- / -- g</span></div>
+        <div class="progress-bar"><div class="progress-fill c-fill" id="cBar" style="width: 0%;"></div></div>
       </div>
-      
       <div class="calorie-summary">
         <span class="calorie-label">合計カロリー</span>
         <span class="calorie-value"><span id="totalCalorie">--</span> / <span id="targetCalorie">--</span> kcal</span>
       </div>
     </section>
-    
-    <section class="card food-card">
-      <h2 class="card-title">今日の食事</h2>
-      <div id="foodList" class="food-list">
-        <div class="food-empty">まだ記録がありません</div>
-      </div>
-    </section>
-    
-    <section class="card recommend-card">
-      <h2 class="card-title">あなたへのおすすめ食材</h2>
-      <div id="recommendMessage" class="recommend-message">--</div>
-      <div id="recommendList" class="recommend-list"></div>
-    </section>
-    
+
     <section class="card" id="yesterdayCard">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
         <button onclick="changeDay(1)" style="background:#5BB9CD;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">◀ 前の日</button>
@@ -139,20 +98,31 @@
 
     <section class="card" id="recentCard" style="display:none;">
       <h2 class="card-title">よく食べる物</h2>
-      <p style="font-size:12px;color:#888;margin:0 0 10px;">LINEで送ればそのまま記録できます</p>
+      <p style="font-size:12px;color:#888;margin:0 0 10px;">タップでそのまま記録できます</p>
       <div id="recentMenus" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
     </section>
+
+    <section class="card food-card">
+      <h2 class="card-title">今日の食事</h2>
+      <div id="foodList" class="food-list">
+        <div class="food-empty">まだ記録がありません</div>
+      </div>
+    </section>
+
+    <section class="card recommend-card">
+      <h2 class="card-title">あなたへのおすすめ食材</h2>
+      <div id="recommendMessage" class="recommend-message">--</div>
+      <div id="recommendList" class="recommend-list"></div>
+    </section>
+
     <section class="card water-card">
       <h2 class="card-title">水分</h2>
-      
       <div class="water-display">
         <span id="waterTotal">--</span>L <span class="water-target">/ <span id="waterTarget">--</span>L</span>
       </div>
-      
       <div class="progress-bar water-progress">
         <div class="progress-fill water-fill" id="waterBar" style="width: 0%;"></div>
       </div>
-      
       <div class="water-buttons">
         <button class="btn-water" onclick="addWater(250)">+ 250ml</button>
         <button class="btn-water" onclick="addWater(500)">+ 500ml</button>
@@ -166,7 +136,7 @@
           style="background:#5BB9CD;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;font-family:inherit;white-space:nowrap;cursor:pointer">追加</button>
       </div>
     </section>
-    
+
     <section class="card cheat-card">
       <h2 class="card-title">今週のチートデイ</h2>
       <p class="cheat-desc">週1日だけカロリー気にせず食べていい日。ストレス溜めずに続けるための日です。</p>
@@ -176,7 +146,7 @@
         <button class="btn-cheat-change" onclick="openCheatDayModal()">曜日を変更</button>
       </div>
     </section>
-    
+
     <section class="card streak-card">
       <h2 class="card-title">連続記録</h2>
       <div class="streak-display">
@@ -185,7 +155,7 @@
       </div>
       <div class="streak-comment">この調子で続けましょう♡</div>
     </section>
-    
+
     <section class="account-section">
       <details class="account-details">
         <summary>アカウント設定</summary>
@@ -197,15 +167,14 @@
         </div>
       </details>
     </section>
-    
+
     <footer class="footer">
       <p class="footer-brand">ONE BALANCE METHOD</p>
       <p class="footer-sub">ONE-TRE 監修</p>
     </footer>
-    
+
   </div>
-  
-  <!-- チートデイ変更モーダル -->
+
   <div id="cheatDayModal" class="modal-overlay" style="display:none;">
     <div class="modal-content">
       <h3 class="modal-title">チートデイの曜日を選択</h3>
@@ -223,17 +192,16 @@
       <button class="btn-modal-cancel" onclick="closeCheatDayModal()">キャンセル</button>
     </div>
   </div>
-  
+
   <div id="errorMessage" class="error-message" style="display:none;">
     <p id="errorText">エラーが発生しました</p>
     <button onclick="hideError()">閉じる</button>
   </div>
-  
+
   <div id="toast" class="toast"></div>
-  
+
   <script src="script.js"></script>
-  
-  <!-- Service Worker登録 -->
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
