@@ -189,8 +189,8 @@ function renderFoodList(foods) {
     container.innerHTML = '<div class="food-empty">まだ記録がありません<br>LINEで食事写真を送ってください</div>';
     return;
   }
-  container.innerHTML = foods.map(f => `
-    <div class="food-item">
+  container.innerHTML = foods.map(function(f){ return `
+    <div class="food-item" style="position:relative;padding-right:60px;">
       <div class="food-time">${f.time}</div>
       <div>
         <span class="food-meal">${f.mealType}</span>
@@ -199,8 +199,9 @@ function renderFoodList(foods) {
       <div class="food-pfc">
         P:${f.protein}g  F:${f.fat}g  C:${f.carbohydrate}g  ${f.calorie}kcal
       </div>
+      <button onclick="deleteFood(${f.ts})" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button>
     </div>
-  `).join('');
+  `; }).join('');
 }
 
 function renderRecommend(recommend) {
@@ -552,6 +553,9 @@ function renderDay(d) {
     return;
   }
   if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
+  if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item" style="position:relative;padding-right:60px;"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div><button onclick="deleteFood(' + f.ts + ')" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button></div>'; }).join('');
+}
+  if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
   if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div></div>'; }).join('');
 }
 function logFood(i) {
@@ -628,5 +632,11 @@ function deleteMenu(i) {
   if (!confirm('「' + item.menu + '」を削除しますか？')) return;
   showToast('削除中...', 'info');
   postToGas({ action: 'deleteMenu', uid: lineUserId, menuName: item.menu })
+    .then(function(){ setTimeout(function(){ loadData(); }, 800); });
+}
+function deleteFood(ts) {
+  if (!confirm('この記録を削除しますか？')) return;
+  showToast('削除中...', 'info');
+  postToGas({ action: 'deleteFood', uid: lineUserId, ts: ts })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
