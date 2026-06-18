@@ -175,6 +175,7 @@ function renderPage(data) {
   renderFoodList(t.foods);
   viewDaysAgo = 1; loadDay();
   renderRecent(data.recentMenus);
+  renderMyMenus(data.registeredMenus);
   renderPFC(t, m);
   renderWater(t.water, m.targetWater);
   renderRecommend(data.recommendedFoods);
@@ -592,4 +593,37 @@ function addMenu() {
   input.value = '';
   postToGas({ action: 'addMenu', uid: lineUserId, menuName: name })
     .then(function(){ setTimeout(function(){ loadData(); }, 1800); });
+}
+function renderMyMenus(list) {
+  const box = document.getElementById('myMenus');
+  if (!box) return;
+  window.__myMenus = list || [];
+  if (!list || list.length === 0) { box.innerHTML = ''; return; }
+  box.innerHTML = '<p style="font-size:12px;color:#888;margin:14px 0 8px;border-top:1px solid #f0d0d3;padding-top:12px;">登録した物（編集・削除できます）</p>' +
+    list.map(function(m, i){
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f3f3;">' +
+        '<span style="flex:1;font-size:14px;color:#333;min-width:0;word-break:break-all;">' + m.menu + '</span>' +
+        '<button onclick="editMenu(' + i + ')" style="background:#fff;border:1.5px solid #5BB9CD;color:#5BB9CD;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">編集</button>' +
+        '<button onclick="deleteMenu(' + i + ')" style="background:#fff;border:1.5px solid #DB444C;color:#DB444C;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">削除</button>' +
+        '</div>';
+    }).join('');
+}
+function editMenu(i) {
+  const item = (window.__myMenus || [])[i];
+  if (!item) return;
+  const newName = prompt('新しいメニュー名を入力（AIが計算し直します）', item.menu);
+  if (newName === null) return;
+  const name = newName.trim();
+  if (!name) return;
+  showToast('AIが計算中...', 'info');
+  postToGas({ action: 'editMenu', uid: lineUserId, oldName: item.menu, menuName: name })
+    .then(function(){ setTimeout(function(){ loadData(); }, 1800); });
+}
+function deleteMenu(i) {
+  const item = (window.__myMenus || [])[i];
+  if (!item) return;
+  if (!confirm('「' + item.menu + '」を削除しますか？')) return;
+  showToast('削除中...', 'info');
+  postToGas({ action: 'deleteMenu', uid: lineUserId, menuName: item.menu })
+    .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
