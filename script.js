@@ -174,7 +174,6 @@ function renderPage(data) {
   drawWeightChart(data.weightHistory);
   renderFoodList(t.foods);
   viewDaysAgo = 1; loadDay();
-  renderRecent(data.recentMenus);
   renderMyMenus(data.registeredMenus);
   renderPFC(t, m);
   renderWater(t.water, m.targetWater);
@@ -556,7 +555,7 @@ function renderDay(d) {
   if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div></div>'; }).join('');
 }
 function logFood(i) {
-  const item = (window.__recent || [])[i];
+  const item = (window.__myMenus || [])[i];
   if (!item) return;
   const food = Object.assign({}, item, { daysAgo: recDay, mealType: recMeal || null });
   const where = (recDay === 1 ? '昨日' : '今日') + (recMeal ? 'の' + recMeal.replace('食', '') : '');
@@ -598,15 +597,19 @@ function renderMyMenus(list) {
   const box = document.getElementById('myMenus');
   if (!box) return;
   window.__myMenus = list || [];
-  if (!list || list.length === 0) { box.innerHTML = ''; return; }
-  box.innerHTML = '<p style="font-size:12px;color:#888;margin:14px 0 8px;border-top:1px solid #f0d0d3;padding-top:12px;">登録した物（編集・削除できます）</p>' +
-    list.map(function(m, i){
-      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f3f3;">' +
-        '<span style="flex:1;font-size:14px;color:#333;min-width:0;word-break:break-all;">' + m.menu + '</span>' +
-        '<button onclick="editMenu(' + i + ')" style="background:#fff;border:1.5px solid #5BB9CD;color:#5BB9CD;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">編集</button>' +
-        '<button onclick="deleteMenu(' + i + ')" style="background:#fff;border:1.5px solid #DB444C;color:#DB444C;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">削除</button>' +
-        '</div>';
-    }).join('');
+  if (!list || list.length === 0) {
+    box.innerHTML = '<p style="font-size:13px;color:#aaa;text-align:center;padding:12px 0;">まだ登録がありません。下の入力欄から登録してください。</p>';
+    if (!recMeal) initRecDefaults();
+    return;
+  }
+  box.innerHTML = list.map(function(m, i){
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f3f3f3;">' +
+      '<button onclick="logFood(' + i + ')" style="flex:1;min-width:0;text-align:left;background:#fff;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:9px 14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;word-break:break-all;">' + m.menu + '</button>' +
+      '<button onclick="editMenu(' + i + ')" style="background:#fff;border:1.5px solid #5BB9CD;color:#5BB9CD;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">編集</button>' +
+      '<button onclick="deleteMenu(' + i + ')" style="background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">削除</button>' +
+      '</div>';
+  }).join('');
+  if (!recMeal) initRecDefaults();
 }
 function editMenu(i) {
   const item = (window.__myMenus || [])[i];
