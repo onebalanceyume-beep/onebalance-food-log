@@ -10,40 +10,40 @@ let weightChart = null;
 async function initLiff() {
   try {
     const savedUid = localStorage.getItem(STORAGE_KEY);
-    const isInLiff = window.location.href.includes('liff.line.me') || 
+    const isInLiff = window.location.href.includes('liff.line.me') ||
                      window.parent !== window;
-    
+
     if (isInLiff || !savedUid) {
       await liff.init({ liffId: LIFF_ID });
-      
+
       if (!liff.isLoggedIn()) {
         liff.login();
         return;
       }
-      
+
       const profile = await liff.getProfile();
       lineUserId = profile.userId;
       localStorage.setItem(STORAGE_KEY, lineUserId);
       console.log("LIFFから取得 & 保存:", lineUserId);
-      
+
     } else {
       lineUserId = savedUid;
       console.log("localStorageから取得:", lineUserId);
     }
-    
+
     setGreeting();
     loadData();
     setupWeightInput();
-    
+
   } catch (err) {
     console.error("初期化エラー:", err);
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const urlUid = urlParams.get('uid');
     const savedUid = localStorage.getItem(STORAGE_KEY);
-    
+
     lineUserId = urlUid || savedUid || '';
-    
+
     if (lineUserId) {
       if (urlUid) localStorage.setItem(STORAGE_KEY, urlUid);
       setGreeting();
@@ -83,7 +83,7 @@ function loadData() {
     showError('LINEから開いてください');
     return;
   }
-  
+
   fetch(`${GAS_URL}?action=getData&uid=${lineUserId}`)
     .then(res => res.json())
     .then(data => {
@@ -91,13 +91,13 @@ function loadData() {
         showError(data.error);
         return;
       }
-      
+
       myData = data;
       renderPage(data);
-      
+
       document.getElementById('loading').style.display = 'none';
       document.getElementById('app').style.display = 'block';
-      
+
       handleHashScroll();
     })
     .catch(err => {
@@ -109,7 +109,7 @@ function loadData() {
 function handleHashScroll() {
   const hash = window.location.hash;
   if (!hash) return;
-  
+
   setTimeout(() => {
     let targetEl = null;
     if (hash === '#weight') targetEl = document.querySelector('.weight-card');
@@ -117,7 +117,7 @@ function handleHashScroll() {
     else if (hash === '#water') targetEl = document.querySelector('.water-card');
     else if (hash === '#cheat') targetEl = document.querySelector('.cheat-card');
     else if (hash === '#recommend') targetEl = document.querySelector('.recommend-card');
-    
+
     if (targetEl) {
       targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       targetEl.style.transition = 'transform 0.3s ease';
@@ -130,47 +130,44 @@ function handleHashScroll() {
 function renderPage(data) {
   const m = data.member;
   const t = data.today;
-  
+
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
-  
-  // 体重入力欄：数値を先に見せない
+
   const weightInput = document.getElementById('weightInput');
   weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
   weightInput.value = '';
 
-  // 前回からの差分表示
   if (data.weightHistory && data.weightHistory.length >= 2) {
     const history = data.weightHistory;
     const latest = history[history.length - 1].weight;
     const prev = history[history.length - 2].weight;
     const diff = (latest - prev).toFixed(1);
     const sign = diff > 0 ? '+' : '';
-    
+
     const changeDisplay = document.getElementById('weightChangeDisplay');
     const changeValue = document.getElementById('weightChangeValue');
     const changeSince = document.getElementById('weightChangeSince');
-    
+
     changeDisplay.style.display = 'block';
     changeValue.textContent = `${sign}${diff}kg`;
     changeValue.className = 'weight-change-value ' + (diff <= 0 ? 'change-down' : 'change-up');
     changeSince.textContent = `${history[history.length - 2].date} の記録から`;
   }
 
-  // スタートからの差分表示
   if (data.weightHistory && data.weightHistory.length >= 2) {
     const history = data.weightHistory;
     const first = history[0].weight;
     const latest = history[history.length - 1].weight;
     const totalDiff = (latest - first).toFixed(1);
     const sign = totalDiff > 0 ? '+' : '';
-    
+
     const startDisplay = document.getElementById('startDiffDisplay');
     const startValue = document.getElementById('startDiffValue');
     startDisplay.style.display = 'block';
     startValue.textContent = `${sign}${totalDiff}kg の変化`;
     startValue.className = 'weight-diff ' + (totalDiff <= 0 ? 'diff-good' : 'diff-warn');
   }
-  
+
   drawWeightChart(data.weightHistory);
   renderFoodList(t.foods);
   viewDaysAgo = 1; loadDay();
@@ -179,7 +176,7 @@ function renderPage(data) {
   renderWater(t.water, m.targetWater);
   renderRecommend(data.recommendedFoods);
   renderWeekCalendar(m.cheatDay);
-  
+
   document.getElementById('streakDays').textContent = data.streakDays || 0;
 }
 
@@ -199,7 +196,7 @@ function renderFoodList(foods) {
       <div class="food-pfc">
         P:${f.protein}g  F:${f.fat}g  C:${f.carbohydrate}g  ${f.calorie}kcal
       </div>
-      <button onclick="deleteFood(${f.ts})" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button>
+      <button onclick="deleteFood('${f.id}')" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button>
     </div>
   `; }).join('');
 }
@@ -207,20 +204,20 @@ function renderFoodList(foods) {
 function renderRecommend(recommend) {
   const messageEl = document.getElementById('recommendMessage');
   const listEl = document.getElementById('recommendList');
-  
+
   if (!recommend) {
     messageEl.textContent = 'データを読み込み中...';
     listEl.innerHTML = '';
     return;
   }
-  
+
   messageEl.textContent = recommend.message;
-  
+
   if (!recommend.foods || recommend.foods.length === 0) {
     listEl.innerHTML = '<div class="recommend-empty">バランスばっちりです♡</div>';
     return;
   }
-  
+
   listEl.innerHTML = recommend.foods.map((f, i) => `
     <div class="recommend-item">
       <div class="recommend-rank">${i + 1}位</div>
@@ -239,19 +236,19 @@ function renderRecommend(recommend) {
 function renderWeekCalendar(cheatDayName) {
   const container = document.getElementById('weekCalendar');
   const countdownEl = document.getElementById('cheatCountdown');
-  
+
   const dayLabels = ['日', '月', '火', '水', '木', '金', '土'];
   const dayMap = { '日': 0, '月': 1, '火': 2, '水': 3, '木': 4, '金': 5, '土': 6 };
   const cheatDayNum = dayMap[cheatDayName];
-  
+
   const today = new Date();
   const todayDow = today.getDay();
   const monday = new Date(today);
   monday.setDate(today.getDate() - ((todayDow + 6) % 7));
-  
+
   let html = '';
   let daysUntilCheat = -1;
-  
+
   for (let i = 0; i < 7; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
@@ -259,16 +256,16 @@ function renderWeekCalendar(cheatDayName) {
     const dateNum = date.getDate();
     const isToday = date.toDateString() === today.toDateString();
     const isCheat = dow === cheatDayNum;
-    
+
     if (isCheat) {
       const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
       if (diff >= 0) daysUntilCheat = diff;
     }
-    
+
     let cls = 'week-day';
     if (isToday && !isCheat) cls += ' today';
     if (isCheat) cls += ' cheat';
-    
+
     html += `
       <div class="${cls}">
         <div class="day-label">${dayLabels[dow]}</div>
@@ -277,9 +274,9 @@ function renderWeekCalendar(cheatDayName) {
       </div>
     `;
   }
-  
+
   container.innerHTML = html;
-  
+
   if (cheatDayNum === undefined) {
     countdownEl.innerHTML = 'チートデイ未設定';
   } else if (daysUntilCheat === 0) {
@@ -295,15 +292,15 @@ function renderPFC(today, member) {
   const pRate = Math.min((today.totalP / member.targetP * 100) || 0, 100);
   const fRate = Math.min((today.totalF / member.targetF * 100) || 0, 100);
   const cRate = Math.min((today.totalC / member.targetC * 100) || 0, 100);
-  
+
   document.getElementById('pValue').textContent = `${(today.totalP || 0).toFixed(1)} / ${member.targetP} g`;
   document.getElementById('fValue').textContent = `${(today.totalF || 0).toFixed(1)} / ${member.targetF} g`;
   document.getElementById('cValue').textContent = `${(today.totalC || 0).toFixed(1)} / ${member.targetC} g`;
-  
+
   document.getElementById('pBar').style.width = pRate + '%';
   document.getElementById('fBar').style.width = fRate + '%';
   document.getElementById('cBar').style.width = cRate + '%';
-  
+
   document.getElementById('totalCalorie').textContent = today.totalCalorie || 0;
   document.getElementById('targetCalorie').textContent = member.targetCalorie;
 }
@@ -318,9 +315,9 @@ function renderWater(currentMl, targetL) {
 
 function drawWeightChart(history) {
   const ctx = document.getElementById('weightChart').getContext('2d');
-  
+
   if (weightChart) weightChart.destroy();
-  
+
   if (!history || history.length === 0) {
     ctx.font = '11px sans-serif';
     ctx.fillStyle = '#B89AAA';
@@ -328,7 +325,7 @@ function drawWeightChart(history) {
     ctx.fillText('体重を記録するとグラフが表示されます', ctx.canvas.width / 2, ctx.canvas.height / 2);
     return;
   }
-  
+
   weightChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -358,7 +355,7 @@ function drawWeightChart(history) {
       },
       scales: {
         y: {
-          display: false  // Y軸の数値を完全非表示
+          display: false
         },
         x: {
           grid: { display: false },
@@ -372,15 +369,15 @@ function drawWeightChart(history) {
 function saveWeightHandler() {
   const input = document.getElementById('weightInput');
   const weight = parseFloat(input.value);
-  
+
   if (!weight || weight < 20 || weight > 200) {
     showToast('正しい体重を入力してください', 'error');
     input.focus();
     return;
   }
-  
+
   showToast('記録中...', 'info');
-  
+
   postToGas({ action: 'saveWeight', uid: lineUserId, weight: weight })
     .then(() => {
       showToast('体重を記録しました ✨', 'success');
@@ -426,9 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveCheatDay(day) {
   showToast('変更中...', 'info');
-  postToGas({ 
-    action: 'updateProfile', 
-    uid: lineUserId, 
+  postToGas({
+    action: 'updateProfile',
+    uid: lineUserId,
     profile: { cheatDay: day }
   }).then(() => {
     showToast(`チートデイを「${day === 'なし' ? '設定しない' : day + '曜日'}」に変更しました ✨`, 'success');
@@ -464,17 +461,17 @@ function confirmPause() {
 function confirmWithdraw() {
   const ok1 = confirm('本当に退会しますか?\n\nこれまでの記録もすべて確認できなくなります。');
   if (!ok1) return;
-  
+
   const ok2 = confirm('もう一度確認します。\n\n退会前に1ヶ月だけお休みする選択肢もあります。\n\n本当に退会しますか?');
   if (!ok2) return;
-  
+
   const reason = prompt('退会理由を選んでください(任意)\n\n1. 効果が感じられなかった\n2. 価格が合わなかった\n3. 時間がなくなった\n4. 他のサービスに移った\n5. その他\n\n番号を入力してください:');
-  
+
   const reasonMap = {'1':'効果が感じられなかった','2':'価格が合わなかった','3':'時間がなくなった','4':'他のサービスに移った','5':'その他'};
   const reasonText = reasonMap[reason] || 'その他';
   const satisfaction = prompt('満足度を1〜5で教えてください(任意・スキップOK)') || '';
   const comment = prompt('最後に、ご意見・ご感想があれば(任意・スキップOK)') || '';
-  
+
   postToGas({ action: 'withdraw', uid: lineUserId, reason: reasonText, satisfaction: satisfaction, comment: comment })
     .then(() => {
       localStorage.removeItem(STORAGE_KEY);
@@ -498,23 +495,6 @@ function showError(message) {
 function hideError() {
   document.getElementById('errorMessage').style.display = 'none';
 }
-function renderYesterday(y) {
-  const card = document.getElementById('yesterdayCard');
-  if (!card) return;
-  if (!y || !y.foods || y.foods.length === 0) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  document.getElementById('yesterdaySummary').textContent =
-    `合計 ${Math.round(y.totalCalorie)}kcal ／ P:${y.totalP.toFixed(1)}g F:${y.totalF.toFixed(1)}g C:${y.totalC.toFixed(1)}g`;
-  document.getElementById('yesterdayFoods').innerHTML = y.foods.map(f => `
-    <div class="food-item">
-      <div>
-        <span class="food-meal">${f.mealType}</span>
-        <span class="food-menu">${f.menu}</span>
-      </div>
-      <div class="food-pfc">${f.calorie}kcal</div>
-    </div>
-  `).join('');
-}
 
 function renderRecent(menus) {
   const card = document.getElementById('recentCard');
@@ -522,11 +502,9 @@ function renderRecent(menus) {
   if (!menus || menus.length === 0) { card.style.display = 'none'; return; }
   card.style.display = 'block';
   window.__recent = menus;
-  document.getElementById('recentMenus').innerHTML = menus.map(function(m, i){
-    return '<button onclick="logFood(' + i + ')" style="background:#FFF;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">' + m.menu + '</button>';
-  }).join('');
   if (!recMeal) initRecDefaults();
 }
+
 let viewDaysAgo = 1;
 function changeDay(delta) {
   const next = viewDaysAgo + delta;
@@ -553,10 +531,7 @@ function renderDay(d) {
     return;
   }
   if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
-  if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item" style="position:relative;padding-right:60px;"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div><button onclick="deleteFood(' + f.ts + ')" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button></div>'; }).join('');
-}
-  if (summary) summary.textContent = '合計 ' + Math.round(d.totalCalorie) + 'kcal ／ P:' + d.totalP.toFixed(1) + 'g F:' + d.totalF.toFixed(1) + 'g C:' + d.totalC.toFixed(1) + 'g';
-  if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div></div>'; }).join('');
+  if (list) list.innerHTML = d.foods.map(function(f){ return '<div class="food-item" style="position:relative;padding-right:60px;"><div class="food-time">' + f.time + '</div><div><span class="food-meal">' + f.mealType + '</span> <span class="food-menu">' + f.menu + '</span></div><div class="food-pfc">P:' + f.protein + 'g F:' + f.fat + 'g C:' + f.carbohydrate + 'g ' + f.calorie + 'kcal</div><button onclick="deleteFood(\'' + f.id + '\')" style="position:absolute;top:8px;right:8px;background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;">削除</button></div>'; }).join('');
 }
 function logFood(i) {
   const item = (window.__myMenus || [])[i];
@@ -634,9 +609,9 @@ function deleteMenu(i) {
   postToGas({ action: 'deleteMenu', uid: lineUserId, menuName: item.menu })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
-function deleteFood(ts) {
+function deleteFood(id) {
   if (!confirm('この記録を削除しますか？')) return;
   showToast('削除中...', 'info');
-  postToGas({ action: 'deleteFood', uid: lineUserId, ts: ts })
+  postToGas({ action: 'deleteFood', uid: lineUserId, foodId: id })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
