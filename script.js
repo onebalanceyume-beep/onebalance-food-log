@@ -496,15 +496,6 @@ function hideError() {
   document.getElementById('errorMessage').style.display = 'none';
 }
 
-function renderRecent(menus) {
-  const card = document.getElementById('recentCard');
-  if (!card) return;
-  if (!menus || menus.length === 0) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  window.__recent = menus;
-  if (!recMeal) initRecDefaults();
-}
-
 let viewDaysAgo = 1;
 function changeDay(delta) {
   const next = viewDaysAgo + delta;
@@ -536,9 +527,19 @@ function renderDay(d) {
 function logFood(i) {
   const item = (window.__myMenus || [])[i];
   if (!item) return;
-  const food = Object.assign({}, item, { daysAgo: recDay, mealType: recMeal || null });
+  const qtyEl = document.getElementById('qty' + i);
+  const qty = qtyEl ? (parseInt(qtyEl.value, 10) || 1) : 1;
+  const food = {
+    menu: item.menu + (qty > 1 ? ' ×' + qty : ''),
+    protein: (Number(item.protein) || 0) * qty,
+    fat: (Number(item.fat) || 0) * qty,
+    carbohydrate: (Number(item.carbohydrate) || 0) * qty,
+    calorie: (Number(item.calorie) || 0) * qty,
+    daysAgo: recDay,
+    mealType: recMeal || null
+  };
   const where = (recDay === 1 ? '昨日' : '今日') + (recMeal ? 'の' + recMeal.replace('食', '') : '');
-  showToast(item.menu + ' を' + where + 'に記録 ✨', 'success');
+  showToast(food.menu + ' を' + where + 'に記録 ✨', 'success');
   postToGas({ action: 'logFood', uid: lineUserId, food: food })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
@@ -581,8 +582,11 @@ function renderMyMenus(list) {
     if (!recMeal) initRecDefaults();
     return;
   }
+  var opts = '';
+  for (var q = 1; q <= 10; q++) opts += '<option value="' + q + '">' + q + '</option>';
   box.innerHTML = list.map(function(m, i){
-    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f3f3f3;">' +
+    return '<div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid #f3f3f3;">' +
+      '<select id="qty' + i + '" style="flex:0 0 auto;border:1.5px solid #5BB9CD;color:#5BB9CD;border-radius:8px;padding:8px 6px;font-size:16px;font-weight:700;font-family:inherit;background:#fff;text-align:center;">' + opts + '</select>' +
       '<button onclick="logFood(' + i + ')" style="flex:1;min-width:0;text-align:left;background:#fff;border:1.5px solid #DB444C;color:#DB444C;border-radius:20px;padding:9px 14px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;word-break:break-all;">' + m.menu + '</button>' +
       '<button onclick="editMenu(' + i + ')" style="background:#fff;border:1.5px solid #5BB9CD;color:#5BB9CD;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">編集</button>' +
       '<button onclick="deleteMenu(' + i + ')" style="background:#fff;border:1.5px solid #999;color:#999;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap;">削除</button>' +
