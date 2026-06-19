@@ -177,7 +177,9 @@ function renderPage(data) {
   renderRecommend(data.recommendedFoods);
   renderWeekCalendar(m.cheatDay);
 
-  document.getElementById('streakDays').textContent = data.streakDays || 0;
+  document.getElementById('streakDays').textContent = data.streakDays || 0;var _pfc = document.querySelector('.pfc-card');
+  var _recent = document.getElementById('recentCard');
+  if (_pfc && _recent) { _pfc.parentNode.insertBefore(_recent, _pfc.nextSibling); }
 }
 
 function renderFoodList(foods) {
