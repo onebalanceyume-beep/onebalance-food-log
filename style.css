@@ -935,3 +935,14 @@ body {
 
 .diff-good { color: #5BB9CD; }
 .diff-warn { color: #DB444C; }
+
+/* ===== 今日のおすすめ献立 ===== */
+.daily-menu-card .menu-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0d0d3;}
+.daily-menu-card .menu-row:last-child{border-bottom:none;}
+.daily-menu-card .menu-time{flex:0 0 42px;font-size:13px;font-weight:700;color:#DB444C;padding-top:2px;}
+.daily-menu-card .menu-main{flex:1;min-width:0;}
+.daily-menu-card .menu-name{font-size:15px;font-weight:700;color:#333;line-height:1.4;}
+.daily-menu-card .menu-meta{font-size:12px;color:#888;margin-top:2px;}
+.daily-menu-card .menu-total{text-align:right;font-size:12px;color:#5BB9CD;font-weight:700;margin-top:8px;}
+.daily-menu-card .menu-advice{margin-top:10px;background:#fff5f5;border-radius:10px;padding:10px 12px;font-size:13px;color:#555;line-height:1.5;}
+.daily-menu-card .menu-cheat{text-align:center;padding:18px 10px;font-size:16px;font-weight:700;color:#DB444C;line-height:1.6;}
