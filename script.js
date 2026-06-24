@@ -621,3 +621,33 @@ function deleteFood(id) {
   postToGas({ action: 'deleteFood', uid: lineUserId, foodId: id })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
 }
+// ===== 今日のおすすめ献立を描画 =====
+function renderDailyMenu(menu) {
+  const body = document.getElementById('dailyMenuBody');
+  if (!body) return;
+
+  if (!menu) {
+    document.getElementById('dailyMenuCard').style.display = 'none';
+    return;
+  }
+
+  if (menu.isCheatDay) {
+    body.innerHTML = '<div class="menu-cheat">🎉 今日はチートデイ！<br>好きなものを楽しんでOK✨</div>';
+    return;
+  }
+
+  const row = (time, m) => {
+    if (!m) return '';
+    return '<div class="menu-row">' +
+      '<div class="menu-time">' + time + '</div>' +
+      '<div class="menu-main">' +
+        '<div class="menu-name">' + (m.menu || '--') + '</div>' +
+        '<div class="menu-meta">約' + (m.kcal || '--') + 'kcal' + (m.point ? '・' + m.point : '') + '</div>' +
+      '</div></div>';
+  };
+
+  let html = row('朝', menu.breakfast) + row('昼', menu.lunch) + row('夜', menu.dinner);
+  if (menu.totalKcal) html += '<div class="menu-total">合計 約' + menu.totalKcal + 'kcal</div>';
+  if (menu.advice) html += '<div class="menu-advice">💡 ' + menu.advice + '</div>';
+  body.innerHTML = html;
+}
