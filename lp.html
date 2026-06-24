@@ -88,13 +88,13 @@
   .lowfat{background:linear-gradient(160deg,var(--mint-bg),#f3faf7);border-radius:22px;padding:24px 22px;margin-bottom:18px;text-align:center}
   .lowfat .tag{display:inline-block;background:var(--mint);color:#3f7d6c;border-radius:999px;font-size:12px;font-weight:700;padding:5px 14px;margin-bottom:10px}
   .lowfat h3{font-size:18px;font-weight:900;margin-bottom:8px}
-  .lowfat p{font-size:14px;color:#6f8a80}
+  .lowfat p{font-size:14px;color:#357a66;font-weight:500}
   .merits{display:flex;flex-direction:column;gap:12px;margin-bottom:18px}
   .merit{background:#fff;border-radius:16px;padding:16px 18px;display:flex;gap:14px;align-items:center;box-shadow:0 4px 14px rgba(238,122,166,.06)}
   .merit .mic{flex:none;width:44px;height:44px;border-radius:12px;background:var(--pink-bg);color:var(--pink-deep);display:flex;align-items:center;justify-content:center}
   .merit .mic .ic-svg{width:22px;height:22px}
   .merit b{font-size:15px;display:block;color:var(--ink)}
-  .merit span{font-size:13px;color:#8a7681;font-weight:500}
+  .merit span{font-size:13px;color:#6b5a64;font-weight:500}
   .honest{background:var(--lav-bg);border-radius:18px;padding:20px 22px;margin-bottom:18px;text-align:center}
   .honest h3{font-size:16px;font-weight:900;color:#7a5fa0;margin-bottom:6px}
   .honest p{font-size:14px;color:#7a6a88}
@@ -199,6 +199,10 @@
   .gallery .stitle .u{background:linear-gradient(transparent 62%,#bfe9dc 62%)}
   .steps .stitle .u{background:linear-gradient(transparent 62%,#cfe3f7 62%)}
   .price .stitle .u{background:linear-gradient(transparent 62%,#e0d2f5 62%)}
+
+  /* 日本語の改行を自然に（1文字孤立を防ぐ・禁則処理） */
+  h1,h2,h3,p,.lead{text-wrap:pretty}
+  .hero p,.lead,.lowfat p,.honest p,.cheat p,.merit span,.feat p,.step p,.pain,.price-card li{word-break:keep-all;overflow-wrap:anywhere;line-break:strict}
 </style>
 </head>
 <body>
@@ -228,8 +232,8 @@
     <img class="logo-img" src="ot_logo.png" alt="ONE TABLE ロゴ">
     <div class="logo-name">ONE TABLE</div>
     <div class="logo-cap">写真を送るだけの食事サポート</div>
-    <h1>がんばらなくていい。<br><span class="hl">写真を送るだけ</span>の<br>食事管理。</h1>
-    <p>撮って送るだけで、PFCバランスを自動チェック。<br>続けられる仕組みが、ここにあります。</p>
+    <h1>がんばらなくていい。<br><span class="hl">写真を送るだけの</span><br>食事管理。</h1>
+    <p>撮って送るだけで、PFCを自動チェック。<br>続けられる仕組みが、ここに。</p>
     <!-- 【差し替え①】LINE友だち追加URL -->
     <a class="hero-cta" href="https://lin.ee/sGPm8DG"><span class="li">LINE</span>LINEで申し込む</a>
   </div>
@@ -251,18 +255,18 @@
   <div class="wrap">
     <span class="eyebrow">ONE BALANCE METHOD</span>
     <h2 class="stitle"><span class="u">どうやって</span>痩せていくの？</h2>
-    <p class="lead">ただ食べる量を減らすダイエットではありません。<br>栄養のバランス（PFC）を整えながら、健康的に絞っていく方法です。</p>
+    <p class="lead">ただ食べる量を減らすダイエットではありません。<br>栄養のバランス（PFC）を整えながら、<br>健康的に絞っていく方法です。</p>
 
     <div class="lowfat">
       <span class="tag">基本の考え方</span>
       <h3>ローファット（低脂質）</h3>
-      <p>脂質をおさえて、たんぱく質をしっかり摂る食べ方。<br>体に負担をかけず、自然に絞れていきます。</p>
+      <p>脂質をおさえて、たんぱく質をしっかり摂る。<br>体に負担をかけず、自然に絞れます。</p>
     </div>
 
     <div class="merits">
       <div class="merit">
         <span class="mic"><svg class="ic-svg" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-        <div><b>無駄な脂肪がつきにくい</b><span>脂質を抑えるから、余計な脂肪をためにくい</span></div>
+        <div><b>無駄な脂肪がつきにくい</b><span>脂質を抑えるから脂肪をためにくい</span></div>
       </div>
       <div class="merit">
         <span class="mic"><svg class="ic-svg" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/></svg></span>
@@ -276,14 +280,14 @@
 
     <div class="honest">
       <h3>正直に言うと…</h3>
-      <p>急に体重がドンと落ちる方法ではありません。でも、ゆっくり着実に、体調を保ちながら痩せられる。だから「続く」んです。</p>
+      <p>急に体重が落ちる方法ではありません。<br>でも、ゆっくり着実に痩せられる。<br>だから「続く」んです。</p>
     </div>
 
     <div class="cheat">
       <span class="cic"><svg class="ic-svg" viewBox="0 0 24 24"><path d="M6 13h12l-1 8H7l-1-8z"/><path d="M9 13c0-2 1.5-3 3-3s3 1 3 3"/><path d="M12 7v3"/><circle cx="12" cy="5.5" r="1.2"/></svg></span>
       <h3>週に1回は、好きなものを食べる日</h3>
       <p><b>週1日だけ、カロリーを気にせず食べてOK。</b><br>がまんしすぎないから、続けられます。</p>
-      <p>しっかり食べる日をつくることで、体の停滞を防ぐねらいもあります。<br>「ずっと制限」じゃなく、メリハリで結果を出していきましょう。</p>
+      <p>しっかり食べる日をつくることで、<br>体の停滞を防ぐねらいも。<br>メリハリで、結果を出していきましょう。</p>
     </div>
   </div>
 </section>
