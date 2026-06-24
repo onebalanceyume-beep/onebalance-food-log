@@ -132,6 +132,7 @@ function renderPage(data) {
   const t = data.today;
 
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
+  renderDailyMenu(data.dailyMenu);
 
   const weightInput = document.getElementById('weightInput');
   weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
