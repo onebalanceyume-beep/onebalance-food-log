@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="apple-touch-icon" href="https://onebalanceyume-beep.github.io/private-gym-trainer/onetre_logo.png">
-<link rel="icon" type="image/png" href="https://onebalanceyume-beep.github.io/private-gym-trainer/onetre_logo.png">
+<link rel="apple-touch-icon" href="ot_logo.png">
+<link rel="icon" type="image/png" href="ot_logo.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ONE TABLE">
 <meta name="theme-color" content="#fde8f0">
@@ -50,7 +50,7 @@
   .hero{
     position:relative;text-align:center;padding:46px 0 58px;overflow:hidden;
     background:
-      linear-gradient(180deg, rgba(253,232,240,.80) 0%, rgba(251,228,238,.82) 50%, rgba(243,230,250,.88) 100%),
+      linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(253,232,240,.45) 45%, rgba(243,230,250,.72) 100%),
       url('HERO_PHOTO_URL.png') center/cover no-repeat,
       linear-gradient(170deg,var(--pink-bg),#f3e6fa);
   }
@@ -58,9 +58,9 @@
   .logo-img{width:84px;height:84px;border-radius:22px;object-fit:cover;box-shadow:var(--shadow);background:#fff}
   .logo-name{font-family:"Cormorant Garamond",serif;letter-spacing:.34em;font-size:15px;color:var(--ink);margin-top:13px}
   .logo-cap{font-size:11px;color:var(--pink-deep);letter-spacing:.1em;font-weight:700;margin-top:2px}
-  .hero h1{font-size:clamp(27px,7.6vw,38px);font-weight:900;line-height:1.45;margin-top:22px;color:var(--ink);text-shadow:0 2px 14px rgba(255,255,255,.6)}
+  .hero h1{font-size:clamp(27px,7.6vw,38px);font-weight:900;line-height:1.45;margin-top:22px;color:var(--ink);text-shadow:0 2px 16px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.9)}
   .hero h1 .hl{background:linear-gradient(transparent 60%,#ffd2e4 60%);padding:0 4px;color:var(--pink-deep)}
-  .hero p{font-size:clamp(14px,3.8vw,17px);margin-top:14px;color:#6f5a64;font-weight:700;text-shadow:0 1px 10px rgba(255,255,255,.7)}
+  .hero p{font-size:clamp(14px,3.8vw,17px);margin-top:14px;color:#5e4d56;font-weight:700;text-shadow:0 1px 12px rgba(255,255,255,.95),0 1px 3px rgba(255,255,255,.9)}
   .hero .hero-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--line);color:#fff;font-weight:700;font-size:16px;text-decoration:none;border-radius:999px;padding:16px 30px;box-shadow:0 10px 24px rgba(6,199,85,.35);margin-top:26px;transition:transform .15s ease}
   .hero .hero-cta:active{transform:scale(.97)}
   .hero .hero-cta .li{font-weight:900;background:#fff;color:var(--line);border-radius:8px;padding:2px 8px;font-size:13px}
@@ -79,11 +79,11 @@
   .stitle{font-size:clamp(21px,5.6vw,26px);font-weight:900;text-align:center;line-height:1.5;margin-bottom:30px;color:var(--ink)}
   .stitle .u{background:linear-gradient(transparent 62%,#ffe1ec 62%);padding:0 3px}
 
-  .pains{background:var(--pink-bg2)}
+  .pains{background:#fffaf0}
   .pain{background:#fff;border-radius:18px;padding:18px 20px;margin-bottom:13px;font-weight:700;display:flex;gap:13px;align-items:center;box-shadow:0 4px 14px rgba(238,122,166,.06)}
   .pain .q{flex:none;width:32px;height:32px;border-radius:50%;background:var(--pink);color:#fff;display:flex;align-items:center;justify-content:center}
 
-  .method{background:var(--cream)}
+  .method{background:#ffffff}
   .lead{text-align:center;font-size:15px;color:#7a6770;margin-bottom:28px;font-weight:500}
   .lowfat{background:linear-gradient(160deg,var(--mint-bg),#f3faf7);border-radius:22px;padding:24px 22px;margin-bottom:18px;text-align:center}
   .lowfat .tag{display:inline-block;background:var(--mint);color:#3f7d6c;border-radius:999px;font-size:12px;font-weight:700;padding:5px 14px;margin-bottom:10px}
@@ -112,20 +112,20 @@
   .feat p{font-size:14px;color:#8a7681;font-weight:500}
   .easynote{text-align:center;font-size:14px;color:var(--pink-deep);font-weight:700;margin:18px 0 0}
 
-  .gallery{background:var(--pink-bg2)}
+  .gallery{background:var(--mint-bg)}
   .shots{display:flex;gap:14px;overflow-x:auto;padding:4px 22px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .shots::-webkit-scrollbar{display:none}
-  .shot{flex:0 0 64%;max-width:230px;scroll-snap-align:center}
+  .shot{flex:0 0 84%;max-width:340px;scroll-snap-align:center}
   .shot img{width:100%;height:auto;display:block;border-radius:20px;filter:drop-shadow(0 10px 24px rgba(238,122,166,.18))}
   .shot .ph{aspect-ratio:1/2}
 
-  .steps{background:linear-gradient(170deg,#f3e6fa,#fef4f8)}
-  .step{display:flex;gap:16px;align-items:flex-start;margin-bottom:24px}
-  .step .n{flex:none;width:46px;height:46px;border-radius:50%;background:var(--lav);color:#fff;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(205,180,232,.4)}
-  .step h3{font-size:17px;font-weight:900;margin-bottom:4px;color:var(--ink)}
+  .steps{background:linear-gradient(170deg,#e8f2fb,#f3faf7)}
+  .step{display:flex;gap:16px;align-items:center;margin-bottom:16px;background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 18px rgba(205,180,232,.18)}
+  .step .n{flex:none;width:54px;height:54px;border-radius:50%;background:var(--lav);color:#fff;font-weight:900;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(205,180,232,.4)}
+  .step h3{font-size:18px;font-weight:900;margin-bottom:4px;color:var(--ink)}
   .step p{font-size:14px;color:#8a7681;font-weight:500}
 
-  .price{background:var(--cream);text-align:center}
+  .price{background:var(--lav-bg);text-align:center}
   .price-card{background:#fff;border:2.5px solid var(--pink);border-radius:28px;padding:34px 26px;box-shadow:var(--shadow);max-width:460px;margin:0 auto}
   .price-card .label{display:inline-block;background:var(--pink-deep);color:#fff;border-radius:999px;font-size:13px;font-weight:700;padding:6px 18px;margin-bottom:16px}
   .price-card .yen{font-weight:900;color:var(--pink-deep);line-height:1}
@@ -137,7 +137,7 @@
   .price-card li{font-weight:700;font-size:15px;padding:8px 0 8px 30px;position:relative;color:var(--ink)}
   .price-card li .ic-svg{position:absolute;left:0;top:11px;width:18px;height:18px;color:var(--mint);stroke-width:2.4}
 
-  .faq{background:var(--pink-bg2)}
+  .faq{background:#fffaf0}
   details{background:#fff;border-radius:18px;padding:0 22px;margin-bottom:12px;box-shadow:0 4px 14px rgba(238,122,166,.06)}
   summary{font-weight:700;font-size:15px;padding:19px 0;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--ink)}
   summary::-webkit-details-marker{display:none}
@@ -181,13 +181,24 @@
     .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
     /* ギャラリー：中央に3枚並べる */
     .shots{justify-content:center;overflow:visible;flex-wrap:wrap}
-    .shot{flex:0 0 230px}
+    .shot{flex:0 0 300px}
     /* 悩みカードを2列に */
     .pains .pain{margin-bottom:13px}
   }
   @media(min-width:820px){
     .pains .wrap{display:flex;flex-direction:column}
   }
+
+  /* 案1: カラフル差し色（セクション別アクセント） */
+  .pains .eyebrow{color:#e0992b}
+  .gallery .eyebrow{color:#3f9d83}
+  .steps .eyebrow{color:#5b8fd0}
+  .price .eyebrow{color:#8a6fc0}
+  .faq .eyebrow{color:#e0992b}
+  .pains .stitle .u{background:linear-gradient(transparent 62%,#ffe9b8 62%)}
+  .gallery .stitle .u{background:linear-gradient(transparent 62%,#bfe9dc 62%)}
+  .steps .stitle .u{background:linear-gradient(transparent 62%,#cfe3f7 62%)}
+  .price .stitle .u{background:linear-gradient(transparent 62%,#e0d2f5 62%)}
 </style>
 </head>
 <body>
@@ -196,7 +207,7 @@
 <header class="hdr">
   <div class="hdr-in">
     <div class="hdr-logo">
-      <img src="https://onebalanceyume-beep.github.io/private-gym-trainer/onetre_logo.png" alt="ONE TABLE">
+      <img src="ot_logo.png" alt="ONE TABLE">
       <span class="nm">ONE TABLE</span>
     </div>
     <button class="burger" id="burger" aria-label="メニュー"><span></span><span></span><span></span></button>
@@ -214,7 +225,7 @@
 <!-- ヒーロー（食材写真が背景） -->
 <header class="hero">
   <div class="wrap inner">
-    <img class="logo-img" src="https://onebalanceyume-beep.github.io/private-gym-trainer/onetre_logo.png" alt="ONE TABLE ロゴ">
+    <img class="logo-img" src="ot_logo.png" alt="ONE TABLE ロゴ">
     <div class="logo-name">ONE TABLE</div>
     <div class="logo-cap">写真を送るだけの食事サポート</div>
     <h1>がんばらなくていい。<br><span class="hl">写真を送るだけ</span>の<br>食事管理。</h1>
@@ -229,7 +240,7 @@
   <div class="wrap">
     <span class="eyebrow">こんなこと、ありませんか？</span>
     <h2 class="stitle">食事管理、<span class="u">ひとりだと続かない</span></h2>
-    <div class="pain"><span class="q">?</span>カロリー計算が面倒で、いつも三日坊主</div>
+    <div class="pain"><span class="q">?</span>がんばっても、なぜか続かない</div>
     <div class="pain"><span class="q">?</span>何をどれだけ食べたらいいのか分からない</div>
     <div class="pain"><span class="q">?</span>無理な食事制限で、リバウンドの繰り返し</div>
   </div>
@@ -270,9 +281,9 @@
 
     <div class="cheat">
       <span class="cic"><svg class="ic-svg" viewBox="0 0 24 24"><path d="M6 13h12l-1 8H7l-1-8z"/><path d="M9 13c0-2 1.5-3 3-3s3 1 3 3"/><path d="M12 7v3"/><circle cx="12" cy="5.5" r="1.2"/></svg></span>
-      <h3>週に1回だけ、好きに食べる日</h3>
-      <p>ワンバランスメソッドには「チートデイ」があります。<b>週1日だけ、カロリーを気にせず食べてOKな日。</b></p>
-      <p>一度しっかり食べることで体に“揺さぶり”をかけ、停滞を防ぎます。ガマンしすぎないから、ストレスなく続けられる。これが私たちの考え方です。</p>
+      <h3>週に1回は、好きなものを食べる日</h3>
+      <p><b>週1日だけ、カロリーを気にせず食べてOK。</b><br>がまんしすぎないから、続けられます。</p>
+      <p>しっかり食べる日をつくることで、体の停滞を防ぐねらいもあります。<br>「ずっと制限」じゃなく、メリハリで結果を出していきましょう。</p>
     </div>
   </div>
 </section>
