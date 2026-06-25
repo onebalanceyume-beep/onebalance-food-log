@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="apple-touch-icon" href="ot_logo.png">
+<link rel="icon" type="image/png" href="ot_logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ONE TABLE">
+<meta name="theme-color" content="#f7a8c4">
+<title>ONE TABLE｜使い方</title>
+<meta name="description" content="ONE TABLE の使い方。あなたがやるのはこの3つだけ。あとは自動で出ます。">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* 白ベース＋パステルピンク（メイン）＋イエロー（ポイント） */
+    --pink:#f7a8c4; --pink-deep:#e07ba0; --pink-bg:#fdeef3; --pink-bg2:#fef7fa;
+    --yellow:#f6cf5e; --yellow-deep:#c79a1c; --yellow-bg:#fff8e2; --yellow-bg2:#fffdf4;
+    --white:#ffffff; --ink:#544751; --ink-sub:#9b8d92; --hair:#f1e6ea; --hair-y:#f0e7cf;
+    --font-head:"Noto Sans JP",sans-serif; --font-body:"Noto Sans JP",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--white);line-height:1.85;overflow-x:hidden;font-weight:500}
+  h1,h2,h3{font-family:var(--font-head)}
+  .use-wrap{max-width:560px;margin:0 auto;padding:0 22px}
+  .use-ic{width:1em;height:1em;display:inline-block;vertical-align:-.125em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ===== ヘッダー（白〜ごく淡ピンク） ===== */
+  .use-hero{text-align:center;padding:46px 0 36px;background:linear-gradient(180deg,#fff 0%,var(--pink-bg2) 100%)}
+  .use-hero .logo{width:74px;height:74px;border-radius:20px;object-fit:cover;box-shadow:0 10px 26px rgba(224,123,160,.14);background:#fff}
+  .use-hero .nm{font-family:"Cormorant Garamond",serif;letter-spacing:.3em;font-size:15px;color:var(--ink);margin-top:12px}
+  .use-hero .cap{font-size:11px;color:var(--pink-deep);letter-spacing:.12em;font-weight:700;margin-top:2px}
+  .use-hero h1{font-size:clamp(24px,6.5vw,30px);font-weight:900;line-height:1.4;margin-top:20px;color:var(--ink)}
+  .use-hero h1 .big{display:block;font-size:clamp(48px,15vw,76px);line-height:1.05;margin-top:6px;letter-spacing:.02em;color:var(--pink-deep)}
+  .use-hero .sub{font-size:15px;color:#8a7a80;margin-top:16px;font-weight:700}
+
+  /* ===== 写真帯 ===== */
+  .photo-band{width:100%;margin:0;padding:0;line-height:0}
+  .photo-band img{width:100%;height:220px;object-fit:cover;display:block}
+  @media(min-width:820px){ .photo-band img{height:360px} }
+
+  /* ===== 共通セクション ===== */
+  .use-sec{padding:46px 0;scroll-margin-top:20px}
+  .use-stitle{font-size:clamp(21px,5.6vw,26px);font-weight:900;text-align:center;line-height:1.5;margin-bottom:8px;color:var(--ink)}
+  .use-snote{text-align:center;font-size:13px;font-weight:700;margin-bottom:24px}
+  .badge-wrap{text-align:center}
+  .badge{display:inline-block;color:#fff;border-radius:999px;font-size:14px;font-weight:900;padding:8px 22px;margin:0 auto 16px}
+
+  /* ===== セクション1：やること（白＋パステルピンク） ===== */
+  .use-do{background:var(--pink-bg2)}
+  .use-do .use-snote{color:var(--pink-deep)}
+  .use-do .badge{background:var(--pink-deep);box-shadow:0 6px 14px rgba(224,123,160,.28)}
+
+  .step{background:var(--white);border-radius:22px;padding:22px 20px;margin-bottom:16px;box-shadow:0 8px 24px rgba(224,123,160,.08);border:1px solid var(--hair)}
+  .step-head{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+  .step-num{flex:none;width:46px;height:46px;border-radius:50%;background:var(--pink-deep);color:#fff;font-family:var(--font-head);font-weight:900;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 13px rgba(224,123,160,.32)}
+  .step-title{font-size:18px;font-weight:900;color:var(--ink);line-height:1.3}
+  .step-body{font-size:14px;color:#6f5f65;font-weight:500}
+  .step-body .li{display:flex;gap:9px;align-items:flex-start;padding:6px 0}
+  .step-body .li .dot{flex:none;width:18px;height:18px;border-radius:50%;background:var(--pink-bg);color:var(--pink-deep);display:flex;align-items:center;justify-content:center;margin-top:3px}
+  .step-body .li .dot .use-ic{width:11px;height:11px;stroke-width:3}
+  .step-body b{color:var(--pink-deep);font-weight:700}
+  .step-tag{display:inline-block;background:var(--pink-bg);color:var(--pink-deep);border-radius:8px;font-size:12px;font-weight:700;padding:3px 10px;margin-bottom:4px}
+  .step-safe{background:var(--yellow-bg);border-radius:12px;padding:11px 14px;font-size:13px;color:var(--yellow-deep);font-weight:700;margin-top:10px;display:flex;gap:8px;align-items:flex-start}
+  .step-safe .use-ic{flex:none;width:17px;height:17px;margin-top:3px}
+
+  .use-tip{background:var(--white);border:2px dashed var(--yellow);border-radius:18px;padding:16px 18px;margin-top:6px;display:flex;gap:12px;align-items:flex-start}
+  .use-tip .tip-ic{flex:none;width:40px;height:40px;border-radius:12px;background:var(--yellow-bg);color:var(--yellow-deep);display:flex;align-items:center;justify-content:center}
+  .use-tip .tip-ic .use-ic{width:20px;height:20px}
+  .use-tip b{display:block;font-size:14px;color:var(--yellow-deep);font-weight:900;margin-bottom:2px}
+  .use-tip span{font-size:13px;color:#6f5f65;font-weight:500}
+
+  /* ===== セクション2：見るだけ（白＋イエローで区別） ===== */
+  .use-see{background:var(--yellow-bg2)}
+  .use-see .use-snote{color:var(--yellow-deep)}
+  .use-see .badge{background:var(--yellow);color:#7a5e08;box-shadow:0 6px 14px rgba(246,207,94,.4)}
+
+  .see-grid{display:flex;flex-direction:column;gap:13px}
+  .see-card{background:var(--white);border-radius:18px;padding:17px 18px;box-shadow:0 8px 24px rgba(199,154,28,.07);border:1px solid var(--hair-y);display:flex;gap:14px;align-items:center}
+  .see-card .sic{flex:none;width:48px;height:48px;border-radius:14px;background:var(--yellow-bg);color:var(--yellow-deep);display:flex;align-items:center;justify-content:center}
+  .see-card .sic .use-ic{width:24px;height:24px}
+  .see-card b{font-size:15px;display:block;color:var(--ink);font-weight:900;margin-bottom:2px}
+  .see-card span{font-size:13px;color:#6f5f65;font-weight:500}
+
+  /* ===== フッター（淡ピンク・上品に） ===== */
+  .use-foot{background:var(--pink-bg);color:var(--ink);text-align:center;padding:44px 22px 34px;border-top:1px solid var(--hair)}
+  .use-foot .brand{font-family:"Cormorant Garamond",serif;letter-spacing:.28em;font-size:18px;font-weight:500;color:var(--pink-deep)}
+  .use-foot .brand-sub{font-size:12px;color:var(--ink-sub);margin-top:6px;letter-spacing:.08em}
+
+  /* 日本語の改行を自然に */
+  h1,h2,h3,p,.step-body,.see-card span{text-wrap:pretty}
+  .use-hero .sub,.step-title,.see-card b,.see-card span{word-break:keep-all;overflow-wrap:anywhere;line-break:strict}
+
+  /* ===== PC対応 ===== */
+  @media(min-width:820px){
+    .use-wrap{max-width:920px;padding:0 32px}
+    .use-sec{padding:70px 0}
+    .use-stitle{font-size:30px}
+    .use-hero{padding:62px 0 48px}
+    .use-hero .logo{width:84px;height:84px}
+    .use-do .use-wrap .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}
+    .step{margin-bottom:0;height:100%}
+    .see-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ ヘッダー ============ -->
+<header class="use-hero">
+  <div class="use-wrap">
+    <img class="logo" src="ot_logo.png" alt="ONE TABLE ロゴ">
+    <div class="nm">ONE TABLE</div>
+    <div class="cap">食事サポート</div>
+    <h1>使い方は、<span class="big">かんたん！</span></h1>
+    <p class="sub">あなたがやるのは、たった3つだけ。</p>
+  </div>
+</header>
+
+<!-- 写真帯①（食事写真） -->
+<div class="photo-band"><img src="sec2.png" alt="健康的な食事" loading="lazy"></div>
+
+<!-- ============ セクション1：やること ============ -->
+<section class="use-sec use-do">
+  <div class="use-wrap">
+    <div class="badge-wrap"><span class="badge">あなたがやること</span></div>
+    <h2 class="use-stitle">やるのは、この<span style="color:var(--pink-deep)">3つだけ</span></h2>
+    <p class="use-snote">これだけ覚えれば、もう大丈夫です</p>
+
+    <div class="steps">
+
+      <!-- ① 体重 -->
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">1</span>
+          <span class="step-title">体重をはかって記録</span>
+        </div>
+        <div class="step-body">
+          <div class="li"><span class="dot"><svg class="use-ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div>一番上の「今日の体重を記録」に数字を入れて、<b>「記録する」をタップ</b>するだけ。</div>
+          </div>
+          <div class="step-safe">
+            <svg class="use-ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div>体重の数字は、あなただけのもの。トレーナーには「変化」だけ伝わるので安心です。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② 食事 -->
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">2</span>
+          <span class="step-title">食べたものを記録</span>
+        </div>
+        <div class="step-body">
+          <span class="step-tag">かんたんな方法</span>
+          <div class="li"><span class="dot"><svg class="use-ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div>LINEに食事の<b>写真を送るだけ</b>。AIが自動で記録します。</div>
+          </div>
+          <span class="step-tag" style="margin-top:8px">アプリで記録する方法</span>
+          <div class="li"><span class="dot"><svg class="use-ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div>「よく食べる物」に、いつも食べるメニューを登録（<b>名前を入れて「登録」</b>。あとはAIが計算）。</div>
+          </div>
+          <div class="li"><span class="dot"><svg class="use-ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div>食べたら「今日 / 昨日」と「朝・昼・夜・間食」を選び、<b>個数を選んでメニューをタップ</b>で記録完了。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ 水分 -->
+      <div class="step">
+        <div class="step-head">
+          <span class="step-num">3</span>
+          <span class="step-title">水分を記録</span>
+        </div>
+        <div class="step-body">
+          <div class="li"><span class="dot"><svg class="use-ic" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div>「水分」の<b>「＋250ml」などのボタンをタップ</b>するだけ。飲んだぶんを足していきましょう。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 最初に1回だけ -->
+    <div class="use-tip">
+      <span class="tip-ic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M6 13h12l-1 8H7l-1-8z"/><path d="M9 13c0-2 1.5-3 3-3s3 1 3 3"/><path d="M12 7v3"/><circle cx="12" cy="5.5" r="1.2"/></svg></span>
+      <div>
+        <b>最初に1回だけ</b>
+        <span>「今週のチートデイ」で、好きな曜日を選んでおきましょう。週に1日だけ、好きなものを食べていい日です。</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 写真帯②（食事写真） -->
+<div class="photo-band"><img src="sec1.png" alt="続けられる食事" loading="lazy"></div>
+
+<!-- ============ セクション2：見るだけ ============ -->
+<section class="use-sec use-see">
+  <div class="use-wrap">
+    <div class="badge-wrap"><span class="badge">あとは見るだけ</span></div>
+    <h2 class="use-stitle">記録すると、<span style="color:var(--yellow-deep)">自動で出ます</span></h2>
+    <p class="use-snote">ここは操作いりません。眺めるだけでOK</p>
+
+    <div class="see-grid">
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg></span>
+        <div><b>今日のPFCバランス</b><span>栄養と合計カロリーが棒グラフで見えます。記録すると伸びていきます。</span></div>
+      </div>
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M17 4h4v4"/></svg></span>
+        <div><b>変化のグラフ</b><span>体重の変化が線で見えます（数字は出ません）。</span></div>
+      </div>
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.2"/></svg></span>
+        <div><b>今日の食事</b><span>記録した食事が並びます。間違えたら「削除」で栄養も元に戻ります。</span></div>
+      </div>
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/><path d="M9 18l-6-6 6-6" opacity=".4"/></svg></span>
+        <div><b>昨日の記録（◀▶）</b><span>前の日の食事を、さかのぼって振り返れます。</span></div>
+      </div>
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0-6 6c0 2.5 1.5 3.8 2.3 5.2.5.9.7 1.8.7 2.8h6c0-1 .2-1.9.7-2.8C16.5 12.8 18 11.5 18 9a6 6 0 0 0-6-6z"/><path d="M9 21h6"/></svg></span>
+        <div><b>あなたへのおすすめ食材</b><span>足りない栄養を、AIが「これ食べて」と教えてくれます。</span></div>
+      </div>
+
+      <div class="see-card">
+        <span class="sic"><svg class="use-ic" viewBox="0 0 24 24"><path d="M13 2 4.5 13H11l-1 9 8.5-11H12l1-9z"/></svg></span>
+        <div><b>連続記録</b><span>何日続いたかをカウント。あなたを応援してくれます。</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ フッター ============ -->
+<footer class="use-foot">
+  <div class="use-wrap">
+    <div class="brand">ONE BALANCE METHOD</div>
+    <div class="brand-sub">ONE-TRE 監修</div>
+  </div>
+</footer>
+
+</body>
+</html>
