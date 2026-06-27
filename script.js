@@ -132,7 +132,7 @@ function renderPage(data) {
   const t = data.today;
 
   document.getElementById('nickname').textContent = m.nickname || 'ヨシ';
-  renderDailyMenu(data.dailyMenu);
+  loadDailyMenu();
 
   const weightInput = document.getElementById('weightInput');
   weightInput.placeholder = (m.currentWeight || 70.0).toFixed(1);
@@ -621,6 +621,27 @@ function deleteFood(id) {
   showToast('削除中...', 'info');
   postToGas({ action: 'deleteFood', uid: lineUserId, foodId: id })
     .then(function(){ setTimeout(function(){ loadData(); }, 800); });
+}
+// ===== 献立を後から取りに行く（ページ高速化のため切り離し） =====
+function loadDailyMenu() {
+  const card = document.getElementById('dailyMenuCard');
+  const body = document.getElementById('dailyMenuBody');
+  if (card) card.style.display = '';
+  if (body) body.innerHTML = '<div class="food-empty">献立を準備中...</div>';
+
+  fetch(`${GAS_URL}?action=getDailyMenu&uid=${lineUserId}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.success) {
+        renderDailyMenu(data.dailyMenu);
+      } else {
+        if (card) card.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error('献立取得失敗:', err);
+      if (card) card.style.display = 'none';
+    });
 }
 // ===== 今日のおすすめ献立を描画 =====
 function renderDailyMenu(menu) {
