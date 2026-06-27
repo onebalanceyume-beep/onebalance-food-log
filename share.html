@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>友だち紹介</title>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<p style="text-align:center;margin-top:40px;font-family:sans-serif;">読み込み中...</p>
+<script>
+  const LIFF_ID = "ここに紹介用LIFF_IDを貼る";
+  const INVITE_URL = "ここに友だち追加URLを貼る";
+  liff.init({ liffId: LIFF_ID }).then(function () {
+    if (liff.isApiAvailable('shareTargetPicker')) {
+      liff.shareTargetPicker([{
+        type: 'text',
+        text: 'ONE TABLE っていう食事サポート使ってるよ📸\n写真を送るだけでPFCを自動チェックしてくれて、あなた専用の献立まで出る!\n\n登録はこちら↓\n' + INVITE_URL
+      }]).then(function () { liff.closeWindow(); })
+        .catch(function () { liff.closeWindow(); });
+    } else {
+      document.body.innerText = 'この端末ではシェア機能が使えません';
+    }
+  }).catch(function (err) {
+    document.body.innerText = 'エラー: ' + err;
+  });
+</script>
+</body>
+</html>
